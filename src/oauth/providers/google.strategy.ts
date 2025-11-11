@@ -39,7 +39,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         provider: 'google',
       },
       accessToken,
-      refreshToken,
+      refreshToken: refreshToken || null,
     };
     done(null, user);
   }

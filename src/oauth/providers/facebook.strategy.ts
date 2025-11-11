@@ -40,7 +40,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
         provider: 'facebook',
       },
       accessToken,
-      refreshToken,
+      refreshToken: refreshToken || null,
     };
     done(null, user);
   }
