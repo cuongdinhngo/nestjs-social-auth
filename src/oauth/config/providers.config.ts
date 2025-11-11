@@ -13,26 +13,26 @@ export function getProvidersConfig(): ProvidersConfig {
 
   // Google configuration
   if (
-    process.env.GOOGLE_APP_ID &&
-    process.env.GOOGLE_APP_SECRET &&
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
     process.env.GOOGLE_CALLBACK_URL
   ) {
     config.google = {
-      clientId: process.env.GOOGLE_APP_ID,
-      clientSecret: process.env.GOOGLE_APP_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       redirect: process.env.GOOGLE_CALLBACK_URL,
     };
   }
 
   // Facebook configuration
   if (
-    process.env.FACEBOOK_APP_ID &&
-    process.env.FACEBOOK_APP_SECRET &&
+    process.env.FACEBOOK_CLIENT_ID &&
+    process.env.FACEBOOK_CLIENT_SECRET &&
     process.env.FACEBOOK_CALLBACK_URL
   ) {
     config.facebook = {
-      clientId: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       redirect: process.env.FACEBOOK_CALLBACK_URL,
     };
   }

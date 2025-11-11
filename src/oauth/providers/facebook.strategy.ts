@@ -10,7 +10,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
 
     if (!config) {
       throw new Error(
-        'Facebook OAuth configuration is missing. Please set FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, and FACEBOOK_CALLBACK_URL environment variables.',
+        'Facebook OAuth configuration is missing. Please set FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, and FACEBOOK_CALLBACK_URL environment variables.',
       );
     }
 
