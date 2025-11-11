@@ -48,13 +48,13 @@ The `integrate` command automatically:
    # OAuth Configuration
 
    # GOOGLE OAuth
-   GOOGLE_APP_ID=your-google-client-id
-   GOOGLE_APP_SECRET=your-google-client-secret
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
    GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
 
    # FACEBOOK OAuth
-   FACEBOOK_APP_ID=your-facebook-app-id
-   FACEBOOK_APP_SECRET=your-facebook-app-secret
+   FACEBOOK_CLIENT_ID=your-facebook-client-id
+   FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
    FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
    ```
 4. ✅ **Updates app.module.ts** to import and add `OAuthModule`
@@ -80,6 +80,36 @@ If you prefer to set up manually:
    })
    ```
 
+## Testing Locally
+
+If you want to test the library in a NestJS project before publishing:
+
+### Using `file:` Protocol (Recommended - No Permission Issues)
+
+This method installs the package directly from the local filesystem. **This is the easiest method and doesn't require global linking or special permissions.**
+
+1. **Build the library**:
+   ```bash
+   npm run build
+   ```
+
+2. **Install in your test NestJS project**:
+   ```bash
+   npm install file:../nestjs-social-auth
+   ```
+   
+   Replace `../nestjs-social-auth` with the relative or absolute path to your library.
+
+3. **Run the integration command**:
+   ```bash
+   npx nestjs-social-auth-integrate
+   ```
+
+4. **Follow the setup steps**:
+   - Add `OAuthModule` to `app.module.ts`
+   - Configure environment variables in `.env`
+   - Start your application
+
 ## Configuration
 
 ### Environment Variables
@@ -88,13 +118,13 @@ Configure your OAuth providers in `.env`:
 
 ```env
 # Google OAuth
-GOOGLE_APP_ID=your-google-client-id
-GOOGLE_APP_SECRET=your-google-client-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
 
 # Facebook OAuth
-FACEBOOK_APP_ID=your-facebook-app-id
-FACEBOOK_APP_SECRET=your-facebook-app-secret
+FACEBOOK_CLIENT_ID=your-facebook-client-id
+FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
 FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
 ```
 
