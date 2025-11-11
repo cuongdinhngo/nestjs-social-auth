@@ -16,15 +16,24 @@ const { execSync } = require('child_process');
 const args = process.argv.slice(2);
 const targetProjectPath = process.cwd();
 
-// Find source oauth directory - could be in node_modules or in development
+// Find source oauth directory - prioritize src/oauth from package root
 let SOURCE_OAUTH_DIR = path.join(__dirname, '../src/oauth');
 if (!fs.existsSync(SOURCE_OAUTH_DIR)) {
-  // Try node_modules path (when installed as package)
-  SOURCE_OAUTH_DIR = path.join(__dirname, '../../nestjs-social-auth/src/oauth');
-  if (!fs.existsSync(SOURCE_OAUTH_DIR)) {
-    // Try another possible location
-    SOURCE_OAUTH_DIR = path.join(require.resolve('nestjs-social-auth'), '../src/oauth');
+  // Try to resolve from package location (when installed as npm package)
+  try {
+    const packagePath = require.resolve('nestjs-social-auth/package.json');
+    SOURCE_OAUTH_DIR = path.join(path.dirname(packagePath), 'src/oauth');
+  } catch (error) {
+    // If package resolution fails, try relative to current script location
+    SOURCE_OAUTH_DIR = path.join(__dirname, '../src/oauth');
   }
+}
+
+// Verify source directory exists
+if (!fs.existsSync(SOURCE_OAUTH_DIR)) {
+  console.error(`❌ Error: OAuth source directory not found at: ${SOURCE_OAUTH_DIR}`);
+  console.error('   Please ensure the nestjs-social-auth package is properly installed.');
+  process.exit(1);
 }
 const TARGET_OAUTH_DIR = path.join(targetProjectPath, 'src/oauth');
 
