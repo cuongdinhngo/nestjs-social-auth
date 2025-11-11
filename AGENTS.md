@@ -66,8 +66,8 @@ The callback endpoint returns the OAuth provider's response in the following for
 The library will use environment variables for OAuth configuration. The format for each provider follows this pattern:
 
 ```
-XXX_APP_ID=your-client-id
-XXX_APP_SECRET=your-client-secret
+XXX_CLIENT_ID=your-client-id
+XXX_CLIENT_SECRET=your-client-secret
 XXX_CALLBACK_URL=http://localhost:3000/oauth/xxx/callback
 ```
 
@@ -77,15 +77,15 @@ Where `XXX` is the provider name in uppercase (e.g., `GOOGLE`, `FACEBOOK`, `LINK
 
 **Google:**
 ```
-GOOGLE_APP_ID=your-google-client-id
-GOOGLE_APP_SECRET=your-google-client-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
 ```
 
 **Facebook:**
 ```
-FACEBOOK_APP_ID=your-facebook-app-id
-FACEBOOK_APP_SECRET=your-facebook-app-secret
+FACEBOOK_CLIENT_ID=your-facebook-client-id
+FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
 FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
 ```
 
@@ -159,12 +159,12 @@ After running the integration command, you need to:
 
 2. **Configure environment variables** in your `.env` file:
    ```env
-   GOOGLE_APP_ID=your-google-client-id
-   GOOGLE_APP_SECRET=your-google-client-secret
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
    GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
 
-   FACEBOOK_APP_ID=your-facebook-app-id
-   FACEBOOK_APP_SECRET=your-facebook-app-secret
+   FACEBOOK_CLIENT_ID=your-facebook-client-id
+   FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
    FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
    ```
 
