@@ -66,4 +66,4 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: false
-        if: secrets.CODECOV_TOKEN
+        if: ${{ secrets.CODECOV_TOKEN != '' }}
