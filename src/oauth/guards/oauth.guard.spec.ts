@@ -10,10 +10,10 @@ jest.mock('../config/providers.config', () => ({
 // Mock AuthGuard
 jest.mock('@nestjs/passport', () => {
   return {
-    AuthGuard: jest.fn((strategy: string) => {
+    AuthGuard: jest.fn((_strategy: string) => {
       return class MockAuthGuard {
-        async canActivate(context: ExecutionContext): Promise<boolean> {
-          return true;
+        canActivate(_context: ExecutionContext): Promise<boolean> {
+          return Promise.resolve(true);
         }
       };
     }),
@@ -32,7 +32,7 @@ describe('OAuthGuard', () => {
     mockExecutionContext = {
       switchToHttp: jest.fn().mockReturnValue({
         getRequest: jest.fn().mockReturnValue({
-          params: {},
+          params: {} as { provider?: string },
         }),
       }),
     } as unknown as ExecutionContext;
@@ -53,8 +53,15 @@ describe('OAuthGuard', () => {
     });
 
     it('should throw BadRequestException for unsupported provider', async () => {
-      mockExecutionContext.switchToHttp().getRequest().params.provider = 'linkedin';
-      (providersConfig.getProviderConfig as jest.Mock).mockReturnValue(undefined);
+      const request = mockExecutionContext.switchToHttp().getRequest<{
+        params?: { provider?: string };
+      }>();
+      if (request.params) {
+        request.params.provider = 'linkedin';
+      }
+      (providersConfig.getProviderConfig as jest.Mock).mockReturnValue(
+        undefined,
+      );
 
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(
         BadRequestException,
@@ -65,7 +72,12 @@ describe('OAuthGuard', () => {
     });
 
     it('should return true for supported provider', async () => {
-      mockExecutionContext.switchToHttp().getRequest().params.provider = 'google';
+      const request = mockExecutionContext.switchToHttp().getRequest<{
+        params?: { provider?: string };
+      }>();
+      if (request.params) {
+        request.params.provider = 'google';
+      }
       (providersConfig.getProviderConfig as jest.Mock).mockReturnValue({
         clientId: 'test-id',
         clientSecret: 'test-secret',
@@ -78,7 +90,12 @@ describe('OAuthGuard', () => {
     });
 
     it('should handle lowercase provider names', async () => {
-      mockExecutionContext.switchToHttp().getRequest().params.provider = 'GOOGLE';
+      const request = mockExecutionContext.switchToHttp().getRequest<{
+        params?: { provider?: string };
+      }>();
+      if (request.params) {
+        request.params.provider = 'GOOGLE';
+      }
       (providersConfig.getProviderConfig as jest.Mock).mockReturnValue({
         clientId: 'test-id',
         clientSecret: 'test-secret',

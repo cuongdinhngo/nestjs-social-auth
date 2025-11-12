@@ -21,12 +21,12 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     });
   }
 
-  async validate(
+  validate(
     accessToken: string,
     refreshToken: string,
     profile: Profile,
     done: (err: any, user: any, info?: any) => void,
-  ): Promise<any> {
+  ): void {
     const { id, name, emails, photos } = profile;
     const user = {
       profile: {

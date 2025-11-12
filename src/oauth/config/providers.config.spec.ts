@@ -37,7 +37,8 @@ describe('ProvidersConfig', () => {
     it('should return Google config when Google env vars are set', () => {
       process.env.GOOGLE_CLIENT_ID = 'test-google-id';
       process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
-      process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+      process.env.GOOGLE_CALLBACK_URL =
+        'http://localhost:3000/oauth/google/callback';
 
       const config = getProvidersConfig();
       expect(config.google).toEqual({
@@ -50,7 +51,8 @@ describe('ProvidersConfig', () => {
     it('should return Facebook config when Facebook env vars are set', () => {
       process.env.FACEBOOK_CLIENT_ID = 'test-facebook-id';
       process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-secret';
-      process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+      process.env.FACEBOOK_CALLBACK_URL =
+        'http://localhost:3000/oauth/facebook/callback';
 
       const config = getProvidersConfig();
       expect(config.facebook).toEqual({
@@ -63,7 +65,8 @@ describe('ProvidersConfig', () => {
     it('should return LinkedIn config when LinkedIn env vars are set', () => {
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const config = getProvidersConfig();
       expect(config.linkedin).toEqual({
@@ -76,13 +79,16 @@ describe('ProvidersConfig', () => {
     it('should return all configs when all providers are configured', () => {
       process.env.GOOGLE_CLIENT_ID = 'test-google-id';
       process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
-      process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+      process.env.GOOGLE_CALLBACK_URL =
+        'http://localhost:3000/oauth/google/callback';
       process.env.FACEBOOK_CLIENT_ID = 'test-facebook-id';
       process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-secret';
-      process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+      process.env.FACEBOOK_CALLBACK_URL =
+        'http://localhost:3000/oauth/facebook/callback';
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const config = getProvidersConfig();
       expect(config.google).toBeDefined();
@@ -103,7 +109,8 @@ describe('ProvidersConfig', () => {
     it('should not include Facebook if any env var is missing', () => {
       process.env.FACEBOOK_CLIENT_ID = 'test-facebook-id';
       delete process.env.FACEBOOK_CLIENT_SECRET;
-      process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+      process.env.FACEBOOK_CALLBACK_URL =
+        'http://localhost:3000/oauth/facebook/callback';
 
       const config = getProvidersConfig();
       expect(config.facebook).toBeUndefined();
@@ -112,7 +119,8 @@ describe('ProvidersConfig', () => {
     it('should not include LinkedIn if any env var is missing', () => {
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       delete process.env.LINKEDIN_CLIENT_SECRET;
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const config = getProvidersConfig();
       expect(config.linkedin).toBeUndefined();
@@ -132,7 +140,8 @@ describe('ProvidersConfig', () => {
     it('should return Google when only Google is configured', () => {
       process.env.GOOGLE_CLIENT_ID = 'test-id';
       process.env.GOOGLE_CLIENT_SECRET = 'test-secret';
-      process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+      process.env.GOOGLE_CALLBACK_URL =
+        'http://localhost:3000/oauth/google/callback';
       delete process.env.FACEBOOK_CLIENT_ID;
 
       const providers = getSupportedProviders();
@@ -143,7 +152,8 @@ describe('ProvidersConfig', () => {
       delete process.env.GOOGLE_CLIENT_ID;
       process.env.FACEBOOK_CLIENT_ID = 'test-id';
       process.env.FACEBOOK_CLIENT_SECRET = 'test-secret';
-      process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+      process.env.FACEBOOK_CALLBACK_URL =
+        'http://localhost:3000/oauth/facebook/callback';
 
       const providers = getSupportedProviders();
       expect(providers).toEqual(['facebook']);
@@ -154,7 +164,8 @@ describe('ProvidersConfig', () => {
       delete process.env.FACEBOOK_CLIENT_ID;
       process.env.LINKEDIN_CLIENT_ID = 'test-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const providers = getSupportedProviders();
       expect(providers).toEqual(['linkedin']);
@@ -163,13 +174,16 @@ describe('ProvidersConfig', () => {
     it('should return all providers when all are configured', () => {
       process.env.GOOGLE_CLIENT_ID = 'test-google-id';
       process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
-      process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+      process.env.GOOGLE_CALLBACK_URL =
+        'http://localhost:3000/oauth/google/callback';
       process.env.FACEBOOK_CLIENT_ID = 'test-facebook-id';
       process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-secret';
-      process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+      process.env.FACEBOOK_CALLBACK_URL =
+        'http://localhost:3000/oauth/facebook/callback';
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const providers = getSupportedProviders();
       expect(providers).toContain('google');
@@ -183,7 +197,8 @@ describe('ProvidersConfig', () => {
     beforeEach(() => {
       process.env.GOOGLE_CLIENT_ID = 'test-google-id';
       process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
-      process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+      process.env.GOOGLE_CALLBACK_URL =
+        'http://localhost:3000/oauth/google/callback';
     });
 
     it('should return config for valid provider', () => {
@@ -198,7 +213,8 @@ describe('ProvidersConfig', () => {
     it('should return config for LinkedIn provider', () => {
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const config = getProviderConfig('linkedin');
       expect(config).toEqual({
@@ -216,7 +232,8 @@ describe('ProvidersConfig', () => {
     it('should be case-insensitive', () => {
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       const config1 = getProviderConfig('GOOGLE');
       const config2 = getProviderConfig('Google');
@@ -242,7 +259,8 @@ describe('ProvidersConfig', () => {
     beforeEach(() => {
       process.env.GOOGLE_CLIENT_ID = 'test-google-id';
       process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
-      process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+      process.env.GOOGLE_CALLBACK_URL =
+        'http://localhost:3000/oauth/google/callback';
     });
 
     it('should return true for supported provider', () => {
@@ -252,7 +270,8 @@ describe('ProvidersConfig', () => {
     it('should return true for LinkedIn when configured', () => {
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       expect(isProviderSupported('linkedin')).toBe(true);
     });
@@ -264,7 +283,8 @@ describe('ProvidersConfig', () => {
     it('should be case-insensitive', () => {
       process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
-      process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+      process.env.LINKEDIN_CALLBACK_URL =
+        'http://localhost:3000/oauth/linkedin/callback';
 
       expect(isProviderSupported('GOOGLE')).toBe(true);
       expect(isProviderSupported('Google')).toBe(true);

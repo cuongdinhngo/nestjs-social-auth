@@ -10,7 +10,9 @@ import { getProviderConfig } from '../config/providers.config';
 @Injectable()
 export class OAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<{
+      params?: { provider?: string };
+    }>();
     const provider = request.params?.provider?.toLowerCase();
 
     if (!provider) {
@@ -28,6 +30,6 @@ export class OAuthGuard implements CanActivate {
   }
 
   private createGuardClass(strategyName: string): new () => CanActivate {
-    return class extends AuthGuard(strategyName) { };
+    return class extends AuthGuard(strategyName) {};
   }
 }

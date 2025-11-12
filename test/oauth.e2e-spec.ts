@@ -11,10 +11,12 @@ describe('OAuth (e2e)', () => {
     // Set up test environment variables
     process.env.GOOGLE_CLIENT_ID = 'test-google-id';
     process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
-    process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+    process.env.GOOGLE_CALLBACK_URL =
+      'http://localhost:3000/oauth/google/callback';
     process.env.FACEBOOK_CLIENT_ID = 'test-facebook-id';
     process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-secret';
-    process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+    process.env.FACEBOOK_CALLBACK_URL =
+      'http://localhost:3000/oauth/facebook/callback';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [OAuthModule],
@@ -31,18 +33,20 @@ describe('OAuth (e2e)', () => {
 
   describe('/oauth/:provider (GET)', () => {
     it('should return 400 for unsupported provider', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .get('/oauth/linkedin')
         .expect(400)
-        .expect((res) => {
-          expect(res.body.message).toContain('not supported');
+        .expect((res: request.Response) => {
+          expect((res.body as { message?: string }).message).toContain(
+            'not supported',
+          );
         });
     });
 
     it('should return 400 when provider is missing', () => {
-      return request(app.getHttpServer())
-        .get('/oauth/')
-        .expect(404); // NestJS returns 404 for missing route params
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return request(app.getHttpServer()).get('/oauth/').expect(404); // NestJS returns 404 for missing route params
     });
 
     // Note: Actual OAuth redirects are hard to test in E2E without mocking Passport
@@ -51,11 +55,14 @@ describe('OAuth (e2e)', () => {
 
   describe('/oauth/:provider/callback (GET)', () => {
     it('should return 400 for unsupported provider callback', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
         .get('/oauth/linkedin/callback')
         .expect(400)
-        .expect((res) => {
-          expect(res.body.message).toContain('not supported');
+        .expect((res: request.Response) => {
+          expect((res.body as { message?: string }).message).toContain(
+            'not supported',
+          );
         });
     });
 

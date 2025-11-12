@@ -6,7 +6,11 @@ import { OAuthGuard } from './guards/oauth.guard';
 import { getAllStrategyClasses } from './config/strategy.registry';
 
 const createProviders = () => {
-  const providers: any[] = [OAuthService, OAuthGuard];
+  const providers: Array<
+    | typeof OAuthService
+    | typeof OAuthGuard
+    | ReturnType<typeof getAllStrategyClasses>[number]
+  > = [OAuthService, OAuthGuard];
 
   const allStrategies = getAllStrategyClasses();
   providers.push(...allStrategies);
@@ -20,4 +24,4 @@ const createProviders = () => {
   providers: createProviders(),
   exports: [OAuthService, OAuthGuard],
 })
-export class OAuthModule { }
+export class OAuthModule {}

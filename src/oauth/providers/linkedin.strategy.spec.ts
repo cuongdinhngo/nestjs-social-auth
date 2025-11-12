@@ -9,10 +9,10 @@ jest.mock('../config/providers.config', () => ({
 // Mock PassportStrategy
 jest.mock('@nestjs/passport', () => {
   return {
-    PassportStrategy: jest.fn((Strategy, name) => {
+    PassportStrategy: jest.fn((_Strategy, _name) => {
       return class MockPassportStrategy {
-        constructor(options: any) {}
-        validate(...args: any[]) {}
+        constructor(_options: unknown) {}
+        validate(..._args: unknown[]) {}
       };
     }),
   };
@@ -32,7 +32,9 @@ describe('LinkedInStrategy', () => {
 
   describe('constructor', () => {
     it('should throw error when config is missing', () => {
-      (providersConfig.getProviderConfig as jest.Mock).mockReturnValue(undefined);
+      (providersConfig.getProviderConfig as jest.Mock).mockReturnValue(
+        undefined,
+      );
 
       expect(() => new LinkedInStrategy()).toThrow(
         'LinkedIn OAuth configuration is missing',
@@ -71,7 +73,7 @@ describe('LinkedInStrategy', () => {
       mockDone = jest.fn();
     });
 
-    it('should format user data correctly', async () => {
+    it('should format user data correctly', () => {
       const mockProfile = {
         id: '123456789',
         name: {
@@ -82,7 +84,7 @@ describe('LinkedInStrategy', () => {
         photos: [{ value: 'https://example.com/photo.jpg' }],
       };
 
-      await strategy.validate('access-token', 'refresh-token', mockProfile, mockDone);
+      strategy.validate('access-token', 'refresh-token', mockProfile, mockDone);
 
       expect(mockDone).toHaveBeenCalledWith(null, {
         profile: {
@@ -98,7 +100,7 @@ describe('LinkedInStrategy', () => {
       });
     });
 
-    it('should handle missing refresh token', async () => {
+    it('should handle missing refresh token', () => {
       const mockProfile = {
         id: '123456789',
         name: {
@@ -109,14 +111,17 @@ describe('LinkedInStrategy', () => {
         photos: [{ value: 'https://example.com/photo.jpg' }],
       };
 
-      await strategy.validate('access-token', null, mockProfile, mockDone);
+      strategy.validate('access-token', null, mockProfile, mockDone);
 
-      expect(mockDone).toHaveBeenCalledWith(null, expect.objectContaining({
-        refreshToken: null,
-      }));
+      expect(mockDone).toHaveBeenCalledWith(
+        null,
+        expect.objectContaining({
+          refreshToken: null,
+        }),
+      );
     });
 
-    it('should handle missing optional fields', async () => {
+    it('should handle missing optional fields', () => {
       const mockProfile = {
         id: '123456789',
         name: {
@@ -127,16 +132,20 @@ describe('LinkedInStrategy', () => {
         photos: undefined,
       };
 
-      await strategy.validate('access-token', null, mockProfile, mockDone);
+      strategy.validate('access-token', null, mockProfile, mockDone);
 
-      expect(mockDone).toHaveBeenCalledWith(null, expect.objectContaining({
-        profile: expect.objectContaining({
-          email: undefined,
-          picture: undefined,
-        }),
-        refreshToken: null,
-      }));
+      expect(mockDone).toHaveBeenCalledWith(
+        null,
+
+        expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          profile: expect.objectContaining({
+            email: undefined,
+            picture: undefined,
+          }),
+          refreshToken: null,
+        }) as unknown,
+      );
     });
   });
 });
-

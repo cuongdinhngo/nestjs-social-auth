@@ -5,7 +5,6 @@ import { OAuthService } from './oauth.service';
 
 describe('OAuthController', () => {
   let controller: OAuthController;
-  let service: OAuthService;
 
   const mockOAuthService = {
     isProviderSupported: jest.fn(),
@@ -25,7 +24,6 @@ describe('OAuthController', () => {
     }).compile();
 
     controller = module.get<OAuthController>(OAuthController);
-    service = module.get<OAuthService>(OAuthService);
     jest.clearAllMocks();
   });
 
@@ -34,50 +32,38 @@ describe('OAuthController', () => {
   });
 
   describe('oauth', () => {
-    it('should throw BadRequestException for unsupported provider', async () => {
+    it('should throw BadRequestException for unsupported provider', () => {
       mockOAuthService.isProviderSupported.mockReturnValue(false);
 
-      const mockReq = {
-        params: { provider: 'linkedin' },
-      } as any;
-      const mockRes = {} as any;
-
-      await expect(
-        controller.oauth('linkedin', mockReq, mockRes),
-      ).rejects.toThrow(BadRequestException);
-      expect(mockOAuthService.isProviderSupported).toHaveBeenCalledWith('linkedin');
+      expect(() => controller.oauth('linkedin')).toThrow(BadRequestException);
+      expect(mockOAuthService.isProviderSupported).toHaveBeenCalledWith(
+        'linkedin',
+      );
     });
 
-    it('should not throw for supported provider', async () => {
+    it('should not throw for supported provider', () => {
       mockOAuthService.isProviderSupported.mockReturnValue(true);
 
-      const mockReq = {
-        params: { provider: 'google' },
-      } as any;
-      const mockRes = {} as any;
-
-      await expect(
-        controller.oauth('google', mockReq, mockRes),
-      ).resolves.not.toThrow();
+      expect(() => controller.oauth('google')).not.toThrow();
     });
   });
 
   describe('oauthCallback', () => {
-    it('should throw UnauthorizedException when user is not authenticated', async () => {
+    it('should throw UnauthorizedException when user is not authenticated', () => {
       const mockReq = {
         params: { provider: 'google' },
         user: null,
-      } as any;
+      } as { params: { provider: string }; user: null };
 
-      await expect(
-        controller.oauthCallback('google', mockReq),
-      ).rejects.toThrow(UnauthorizedException);
-      await expect(
-        controller.oauthCallback('google', mockReq),
-      ).rejects.toThrow('Authentication failed');
+      expect(() =>
+        controller.oauthCallback('google', mockReq as never),
+      ).toThrow(UnauthorizedException);
+      expect(() =>
+        controller.oauthCallback('google', mockReq as never),
+      ).toThrow('Authentication failed');
     });
 
-    it('should return user data when authenticated', async () => {
+    it('should return user data when authenticated', () => {
       const mockUser = {
         profile: {
           id: '123',
@@ -94,9 +80,9 @@ describe('OAuthController', () => {
       const mockReq = {
         params: { provider: 'google' },
         user: mockUser,
-      } as any;
+      } as { params: { provider: string }; user: typeof mockUser };
 
-      const result = await controller.oauthCallback('google', mockReq);
+      const result = controller.oauthCallback('google', mockReq as never);
 
       expect(result).toEqual({
         profile: mockUser.profile,
