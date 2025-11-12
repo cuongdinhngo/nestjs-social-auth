@@ -8,7 +8,13 @@ NestJS library for OAuth SSO via Social providers (Google, Facebook, LinkedIn, e
 npm install nestjs-social-auth
 ```
 
-## Quick Start
+## Usage Options
+
+This library offers three ways to integrate OAuth into your NestJS project:
+
+### Option 1: Integration Command (Recommended for Full Customization)
+
+**Best for**: Users who want full control and customization of the OAuth implementation.
 
 After installation, run the integration command from your NestJS project:
 
@@ -31,10 +37,7 @@ Then run:
 npm run integrate:oauth
 ```
 
-## What the Integration Command Does
-
-The `integrate` command automatically:
-
+**What it does:**
 1. ✅ **Copies oauth directory** to `src/oauth` in your project
 2. ✅ **Installs all required packages**:
    - `@nestjs/passport`
@@ -43,42 +46,122 @@ The `integrate` command automatically:
    - `passport-facebook`
    - `@types/passport-google-oauth20` (dev)
    - `@types/passport-facebook` (dev)
-3. ✅ **Updates .env file** with all provider environment variables:
-   ```env
-   # OAuth Configuration
 
-   # GOOGLE OAuth
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
-
-   # FACEBOOK OAuth
-   FACEBOOK_CLIENT_ID=your-facebook-client-id
-   FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
-   FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
-   ```
-4. ✅ **Updates app.module.ts** to import and add `OAuthModule`
-
-## Manual Setup (Alternative)
-
-If you prefer to set up manually:
-
-1. Copy the `oauth` directory from `node_modules/nestjs-social-auth/src/oauth` to your `src/` directory
-2. Install dependencies:
-   ```bash
-   npm install @nestjs/passport passport passport-google-oauth20 passport-facebook
-   npm install -D @types/passport-google-oauth20 @types/passport-facebook
-   ```
-3. Add environment variables to your `.env` file
-4. Import `OAuthModule` in your `app.module.ts`:
+**After integration:**
+1. Add `OAuthModule` to your `app.module.ts`:
    ```typescript
    import { OAuthModule } from './oauth/oauth.module';
 
    @Module({
      imports: [OAuthModule],
-     // ...
    })
+   export class AppModule {}
    ```
+
+2. Configure environment variables in your `.env` file:
+   ```env
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
+
+   FACEBOOK_CLIENT_ID=your-facebook-client-id
+   FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
+   FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
+   ```
+
+**Benefits:**
+- ✅ Full control: You own the code and can customize everything
+- ✅ No version conflicts: Code is part of your project
+- ✅ Easy to understand: See exactly how OAuth works
+- ✅ Customizable: Modify any part to fit your needs
+
+### Option 2: Import OAuthModule (Automatic Endpoints)
+
+**Best for**: Users who want OAuth endpoints without customization.
+
+Simply import `OAuthModule` in your `app.module.ts`:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { OAuthModule } from 'nestjs-social-auth';
+
+@Module({
+  imports: [
+    // ... other modules
+    OAuthModule,
+  ],
+})
+export class AppModule {}
+```
+
+**What you get:**
+- ✅ Automatic endpoints:
+  - `GET /oauth/:provider` - Redirects to provider's OAuth page
+  - `GET /oauth/:provider/callback` - Handles OAuth callback
+- ✅ No need to manually use `OAuthGuard` - it's already configured
+- ✅ All strategies are automatically registered
+
+**Setup:**
+1. Configure environment variables in your `.env` file (same as Option 1)
+2. Start your application
+
+**Benefits:**
+- ✅ Quick setup: Just import the module
+- ✅ Automatic endpoints: No need to create controllers
+- ✅ Less code: Everything is handled by the module
+
+### Option 3: Use OAuthGuard Directly (Custom Implementation)
+
+**Best for**: Users who want to create custom OAuth endpoints and logic.
+
+Import `OAuthGuard` and use it in your own controllers:
+
+```typescript
+import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common';
+import type { Request } from 'express';
+import { OAuthGuard } from 'nestjs-social-auth';
+
+@Controller('auth')
+export class CustomAuthController {
+  @Get('login/:provider')
+  @UseGuards(OAuthGuard)
+  async login(@Param('provider') provider: string) {
+    // OAuth guard handles the redirect
+  }
+
+  @Get('callback/:provider')
+  @UseGuards(OAuthGuard)
+  async callback(@Param('provider') provider: string, @Req() req: Request) {
+    const user = (req as any).user;
+
+    // Your custom logic here
+    return {
+      message: 'Login successful',
+      user: user.profile,
+    };
+  }
+}
+```
+
+**Setup:**
+1. Import `OAuthModule` in your `app.module.ts` (to register strategies):
+   ```typescript
+   import { OAuthModule } from 'nestjs-social-auth';
+
+   @Module({
+     imports: [OAuthModule],
+   })
+   export class AppModule {}
+   ```
+
+2. Configure environment variables in your `.env` file
+
+3. Use `OAuthGuard` in your custom controllers
+
+**Benefits:**
+- ✅ Maximum flexibility: Create your own endpoints
+- ✅ Custom logic: Handle OAuth responses your way
+- ✅ Full control: Design your authentication flow
 
 ## Testing Locally
 
@@ -133,17 +216,23 @@ FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
 - **Google**: [Google Cloud Console](https://console.cloud.google.com/)
 - **Facebook**: [Facebook Developers](https://developers.facebook.com/)
 
-## Usage
+## Endpoints
 
-### Endpoints
+Depending on which option you chose:
 
-Once integrated, the following endpoints are available:
+### Option 1 & 2: Automatic Endpoints
+
+When using the integration command or importing `OAuthModule`, these endpoints are automatically available:
 
 - `GET /oauth/:provider` - Redirects to provider's OAuth page
   - Example: `GET /oauth/google`, `GET /oauth/facebook`
 
 - `GET /oauth/:provider/callback` - OAuth callback handler
   - Returns: `{ profile, refreshToken, accessToken }`
+
+### Option 3: Custom Endpoints
+
+When using `OAuthGuard` directly, you create your own endpoints with custom paths and logic.
 
 ### Response Format
 
