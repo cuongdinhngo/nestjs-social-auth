@@ -3,15 +3,24 @@ import { PassportModule } from '@nestjs/passport';
 import { OAuthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
 import { OAuthGuard } from './guards/oauth.guard';
-import { getAllStrategyClasses } from './config/strategy.registry';
+import { getSupportedProviders } from './config/providers.config';
+import { getStrategyClass } from './config/strategy.registry';
 
 const createProviders = () => {
-  const providers: any[] = [OAuthService, OAuthGuard];
+  const providers: Array<
+    typeof OAuthService | typeof OAuthGuard | NonNullable<ReturnType<typeof getStrategyClass>>
+  > = [OAuthService, OAuthGuard];
 
-  const allStrategies = getAllStrategyClasses();
-  providers.push(...allStrategies);
+  // Only register strategies for providers that have valid config
+  const supportedProviders = getSupportedProviders();
+  supportedProviders.forEach((provider) => {
+    const strategyClass = getStrategyClass(provider);
+    if (strategyClass) {
+      providers.push(strategyClass);
+    }
+  });
 
-  return providers;
+  return providers.filter((p): p is NonNullable<typeof p> => p !== undefined);
 };
 
 @Module({
@@ -20,4 +29,4 @@ const createProviders = () => {
   providers: createProviders(),
   exports: [OAuthService, OAuthGuard],
 })
-export class OAuthModule { }
+export class OAuthModule {}

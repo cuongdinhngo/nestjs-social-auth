@@ -58,7 +58,9 @@ export function getSupportedProviders(): string[] {
   return Object.keys(config);
 }
 
-export function getProviderConfig(provider: string): ProviderConfig | undefined {
+export function getProviderConfig(
+  provider: string,
+): ProviderConfig | undefined {
   const config = getProvidersConfig();
   return config[provider.toLowerCase()];
 }

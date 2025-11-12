@@ -9,12 +9,14 @@ import { FacebookStrategy } from './providers/facebook.strategy';
 // Mock the strategies to avoid constructor errors
 jest.mock('./providers/google.strategy');
 jest.mock('./providers/facebook.strategy');
+jest.mock('./providers/linkedin.strategy');
 jest.mock('./config/providers.config', () => ({
   getProviderConfig: jest.fn().mockReturnValue({
     clientId: 'test-id',
     clientSecret: 'test-secret',
     redirect: 'http://localhost:3000/oauth/test/callback',
   }),
+  getSupportedProviders: jest.fn().mockReturnValue(['google', 'facebook']),
 }));
 
 describe('OAuthModule', () => {

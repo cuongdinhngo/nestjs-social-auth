@@ -12,6 +12,7 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
       throw new Error('LinkedIn OAuth configuration is missing.');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     super({
       clientID: config.clientId,
       clientSecret: config.clientSecret,
@@ -21,13 +22,18 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
     });
   }
 
-  async validate(
+  validate(
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: (err: any, user: any, info?: any) => void,
-  ): Promise<any> {
-    const { id, name, emails, photos } = profile;
+    done: (err: unknown, user: unknown, info?: unknown) => void,
+  ): void {
+    const { id, name, emails, photos } = profile as {
+      id: string;
+      name?: { givenName?: string; familyName?: string };
+      emails?: Array<{ value?: string }>;
+      photos?: Array<{ value?: string }>;
+    };
     const user = {
       profile: {
         id,
@@ -43,4 +49,3 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
     done(null, user);
   }
 }
-

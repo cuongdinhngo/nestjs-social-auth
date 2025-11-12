@@ -3,26 +3,21 @@ import {
   Get,
   Param,
   Req,
-  Res,
   UseGuards,
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 import { OAuthGuard } from './guards/oauth.guard';
 import { OAuthService } from './oauth.service';
 
 @Controller('oauth')
 export class OAuthController {
-  constructor(private readonly oauthService: OAuthService) { }
+  constructor(private readonly oauthService: OAuthService) {}
 
   @Get(':provider')
   @UseGuards(OAuthGuard)
-  async oauth(
-    @Param('provider') provider: string,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  oauth(@Param('provider') provider: string) {
     const providerLower = provider.toLowerCase();
 
     if (!this.oauthService.isProviderSupported(providerLower)) {
@@ -34,8 +29,21 @@ export class OAuthController {
 
   @Get(':provider/callback')
   @UseGuards(OAuthGuard)
-  async oauthCallback(@Param('provider') provider: string, @Req() req: Request) {
-    const user = (req as any).user;
+  oauthCallback(@Param('provider') _provider: string, @Req() req: Request) {
+    interface OAuthUser {
+      profile: {
+        id: string;
+        email?: string;
+        firstName?: string;
+        lastName?: string;
+        picture?: string;
+        provider: string;
+      };
+      refreshToken: string | null;
+      accessToken: string;
+    }
+
+    const user = (req as Request & { user?: OAuthUser }).user;
 
     if (!user) {
       throw new UnauthorizedException('Authentication failed');

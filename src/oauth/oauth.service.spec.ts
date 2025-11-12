@@ -44,7 +44,9 @@ describe('OAuthService', () => {
 
       const result = service.isProviderSupported('google');
       expect(result).toBe(true);
-      expect(providersConfig.isProviderSupported).toHaveBeenCalledWith('google');
+      expect(providersConfig.isProviderSupported).toHaveBeenCalledWith(
+        'google',
+      );
     });
 
     it('should return false for unsupported provider', () => {
@@ -81,7 +83,9 @@ describe('OAuthService', () => {
 
       const result = service.getProviderConfig('linkedin');
       expect(result).toBeUndefined();
-      expect(providersConfig.getProviderConfig).toHaveBeenCalledWith('linkedin');
+      expect(providersConfig.getProviderConfig).toHaveBeenCalledWith(
+        'linkedin',
+      );
     });
   });
 });
