@@ -12,7 +12,8 @@ oauth/
 ├── oauth.service.ts            # OAuth business logic
 ├── oauth.module.ts             # OAuth module configuration
 ├── config/
-│   └── providers.config.ts     # Provider configuration
+│   ├── providers.config.ts     # Provider configuration (env vars)
+│   └── strategy.registry.ts    # Strategy registry (maps providers to strategies)
 ├── guards/
 │   └── oauth.guard.ts         # Dynamic OAuth guard (Google, Facebook, ...)
 └── providers/
@@ -46,6 +47,9 @@ oauth/
 - Supports multiple social providers (extensible architecture)
 - Returns OAuth provider response directly (profile, refreshToken, accessToken)
 - User projects handle additional logic (JWT generation, user persistence, etc.)
+- **Strategy Registration**: All strategies are always registered in `OAuthModule` (via `strategy.registry.ts`), but strategies throw errors in constructor if environment variables are missing
+- **Guard Logic**: `OAuthGuard` uses `getProviderConfig()` to check if provider is supported and throws `BadRequestException` for invalid/missing providers
+- **Strategy Registry**: Centralized registry (`strategy.registry.ts`) maps provider names to strategy classes for dynamic loading
 
 ## Response Format
 
@@ -89,38 +93,73 @@ FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
 FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
 ```
 
-## Integration Command
+## Usage Options
 
-The library provides an integration command that automatically sets up the OAuth module in a NestJS project.
+The library offers three ways to integrate OAuth into a NestJS project:
 
-### Usage
+### Option 1: Integration Command (Full Customization)
 
-After installing the package:
+**Best for**: Users who want full control and customization.
 
-```bash
-npm install nestjs-social-auth
+1. Install the package:
+   ```bash
+   npm install nestjs-social-auth
+   ```
+
+2. Run the integration command:
+   ```bash
+   npx nestjs-social-auth-integrate
+   ```
+
+3. **What it does**:
+   - ✅ Copies `oauth` directory to `src/oauth` in your project
+   - ✅ Installs required packages (production and dev dependencies)
+
+4. **Manual steps after integration**:
+   - Add `OAuthModule` to `app.module.ts`
+   - Configure environment variables in `.env` file
+
+**Benefits**: Full control, no version conflicts, customizable
+
+### Option 2: Import OAuthModule (Automatic Endpoints)
+
+**Best for**: Users who want OAuth endpoints without customization.
+
+Simply import `OAuthModule` in your `app.module.ts`:
+```typescript
+import { OAuthModule } from 'nestjs-social-auth';
+
+@Module({
+  imports: [OAuthModule],
+})
+export class AppModule {}
 ```
 
-Run the integration command from your NestJS project directory:
+**Benefits**: Quick setup, automatic endpoints, less code
 
-```bash
-npx nestjs-social-auth-integrate
-```
+### Option 3: Use OAuthGuard Directly (Custom Implementation)
 
-Or add it to your `package.json` scripts:
+**Best for**: Users who want custom OAuth endpoints and logic.
 
-```json
-{
-  "scripts": {
-    "integrate:oauth": "nestjs-social-auth-integrate"
+Import `OAuthGuard` and use it in your own controllers:
+```typescript
+import { OAuthGuard } from 'nestjs-social-auth';
+
+@Controller('auth')
+export class CustomAuthController {
+  @Get('login/:provider')
+  @UseGuards(OAuthGuard)
+  async login(@Param('provider') provider: string) {
+    // Custom logic
   }
 }
 ```
 
-Then run:
-```bash
-npm run integrate:oauth
-```
+**Note**: Still need to import `OAuthModule` to register strategies.
+
+**Benefits**: Maximum flexibility, custom logic, full control
+
+## Integration Command Details
 
 ### What the Integration Command Does
 
@@ -128,7 +167,7 @@ The `integrate` command automatically:
 
 1. **Copies oauth directory** to `src/oauth` in your project
    - Includes all controllers, services, modules, guards, providers, and config files
-   - Maintains the complete directory structure
+   - Maintains the complete directory structure including `strategy.registry.ts`
 
 2. **Installs required packages**:
    - Production dependencies:
@@ -170,10 +209,47 @@ After running the integration command, you need to:
 
 3. **Start your application** and test the endpoints
 
-### Benefits of Integration Command
+## Testing
 
-- ✅ **Quick setup**: One command to get started
-- ✅ **Full control**: You own the code and can customize it
-- ✅ **No version conflicts**: Code is part of your project
-- ✅ **Easy to understand**: See exactly how OAuth works
-- ✅ **Customizable**: Modify any part to fit your needs
+### Test Commands
+
+```bash
+npm test          # Run all unit tests
+npm run test:watch # Watch mode
+npm run test:cov   # Coverage report
+npm run test:e2e   # E2E tests
+```
+
+### Test Structure
+
+- Unit tests for all components (services, guards, strategies, config, controllers, modules)
+- Integration tests for module registration
+- E2E tests for HTTP endpoints
+
+### Testing Rules
+
+When making changes to core configuration files, you **MUST** update the corresponding tests:
+
+1. **`providers.config.ts` updates**:
+   - ✅ Update `providers.config.spec.ts` to cover new functionality
+   - ✅ Test new environment variable patterns
+   - ✅ Test new provider configurations
+   - ✅ Ensure all helper functions (`getProviderConfig`, `isProviderSupported`, etc.) are tested
+
+2. **`strategy.registry.ts` updates**:
+   - ✅ Update `strategy.registry.spec.ts` to include new strategies
+   - ✅ Test `getStrategyClass()` with new provider names
+   - ✅ Verify `getAllStrategyClasses()` returns all registered strategies
+   - ✅ Test case-insensitive provider lookup
+
+3. **Adding new strategy to `providers/` directory**:
+   - ✅ Create `{provider}.strategy.spec.ts` test file
+   - ✅ Test constructor validation (missing config, valid config)
+   - ✅ Test `validate()` method with mock profile data
+   - ✅ Test error handling for missing optional fields
+   - ✅ Add the new strategy to `strategy.registry.ts`
+   - ✅ Update `strategy.registry.spec.ts` to include the new strategy
+   - ✅ Add provider configuration to `providers.config.ts`
+   - ✅ Update `providers.config.spec.ts` to test the new provider config
+
+**Important**: All tests must pass before committing changes. Run `npm test` to verify.

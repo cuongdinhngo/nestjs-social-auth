@@ -251,6 +251,32 @@ When using `OAuthGuard` directly, you create your own endpoints with custom path
 }
 ```
 
+## Testing
+
+The library has comprehensive test coverage with unit tests, integration tests, and E2E tests.
+
+### Running Tests
+
+```bash
+# Run all unit tests
+npm test
+
+# Watch mode (runs tests on file changes)
+npm run test:watch
+
+# Generate coverage report
+npm run test:cov
+
+# Run E2E tests
+npm run test:e2e
+```
+
+### Test Structure
+
+- Unit tests for services, guards, strategies, config, and controllers
+- Integration tests for module registration
+- E2E tests for HTTP endpoints
+
 ## Adding New Providers
 
 1. Create a new strategy file in `src/oauth/providers/` (e.g., `linkedin.strategy.ts`)
