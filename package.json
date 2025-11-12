@@ -4,7 +4,28 @@
   "description": "NestJS library for OAuth SSO via Social providers (Google, Facebook, LinkedIn, etc.)",
   "author": "",
   "private": false,
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "keywords": [
+    "nestjs",
+    "oauth",
+    "sso",
+    "social-auth",
+    "google-oauth",
+    "facebook-oauth",
+    "passport",
+    "authentication"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cuongdinhngo/nestjs-social-auth"
+  },
+  "files": [
+    "dist",
+    "src",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

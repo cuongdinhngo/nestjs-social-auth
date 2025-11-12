@@ -3,19 +3,13 @@ import { PassportModule } from '@nestjs/passport';
 import { OAuthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
 import { OAuthGuard } from './guards/oauth.guard';
-import { getSupportedProviders } from './config/providers.config';
-import { getStrategyClass } from './config/strategy.registry';
+import { getAllStrategyClasses } from './config/strategy.registry';
 
 const createProviders = () => {
   const providers: any[] = [OAuthService, OAuthGuard];
-  const supportedProviders = getSupportedProviders();
 
-  supportedProviders.forEach((provider) => {
-    const strategyClass = getStrategyClass(provider);
-    if (strategyClass) {
-      providers.push(strategyClass);
-    }
-  });
+  const allStrategies = getAllStrategyClasses();
+  providers.push(...allStrategies);
 
   return providers;
 };

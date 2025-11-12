@@ -9,9 +9,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const config = getProviderConfig('google');
 
     if (!config) {
-      throw new Error(
-        'Google OAuth configuration is missing. Please set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_CALLBACK_URL environment variables.',
-      );
+      throw new Error('Google OAuth configuration is missing.');
     }
 
     super({
