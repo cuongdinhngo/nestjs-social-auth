@@ -1,11 +1,11 @@
 import {
+  BadRequestException,
   Injectable,
   ExecutionContext,
-  UnauthorizedException,
   CanActivate,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { isProviderSupported } from '../config/providers.config';
+import { getProviderConfig } from '../config/providers.config';
 
 @Injectable()
 export class OAuthGuard implements CanActivate {
@@ -14,12 +14,12 @@ export class OAuthGuard implements CanActivate {
     const provider = request.params?.provider?.toLowerCase();
 
     if (!provider) {
-      throw new UnauthorizedException('Provider not specified');
+      throw new BadRequestException('Provider not specified');
     }
 
-    // Check if provider is supported using providers config
-    if (!isProviderSupported(provider)) {
-      throw new UnauthorizedException(`Provider ${provider} is not supported`);
+    const config = getProviderConfig(provider);
+    if (!config) {
+      throw new BadRequestException(`Provider ${provider} is not supported`);
     }
 
     const GuardClass = this.createGuardClass(provider);
