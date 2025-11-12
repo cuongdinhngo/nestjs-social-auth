@@ -5,6 +5,7 @@ import {
 } from './strategy.registry';
 import { GoogleStrategy } from '../providers/google.strategy';
 import { FacebookStrategy } from '../providers/facebook.strategy';
+import { LinkedInStrategy } from '../providers/linkedin.strategy';
 
 describe('StrategyRegistry', () => {
   describe('STRATEGY_REGISTRY', () => {
@@ -16,8 +17,12 @@ describe('StrategyRegistry', () => {
       expect(STRATEGY_REGISTRY.facebook).toBe(FacebookStrategy);
     });
 
+    it('should contain LinkedInStrategy', () => {
+      expect(STRATEGY_REGISTRY.linkedin).toBe(LinkedInStrategy);
+    });
+
     it('should have correct number of strategies', () => {
-      expect(Object.keys(STRATEGY_REGISTRY).length).toBe(2);
+      expect(Object.keys(STRATEGY_REGISTRY).length).toBe(3);
     });
   });
 
@@ -32,8 +37,13 @@ describe('StrategyRegistry', () => {
       expect(strategy).toBe(FacebookStrategy);
     });
 
-    it('should return undefined for unknown provider', () => {
+    it('should return LinkedInStrategy for linkedin provider', () => {
       const strategy = getStrategyClass('linkedin');
+      expect(strategy).toBe(LinkedInStrategy);
+    });
+
+    it('should return undefined for unknown provider', () => {
+      const strategy = getStrategyClass('twitter');
       expect(strategy).toBeUndefined();
     });
 
@@ -41,6 +51,9 @@ describe('StrategyRegistry', () => {
       expect(getStrategyClass('GOOGLE')).toBe(GoogleStrategy);
       expect(getStrategyClass('Google')).toBe(GoogleStrategy);
       expect(getStrategyClass('google')).toBe(GoogleStrategy);
+      expect(getStrategyClass('LINKEDIN')).toBe(LinkedInStrategy);
+      expect(getStrategyClass('LinkedIn')).toBe(LinkedInStrategy);
+      expect(getStrategyClass('linkedin')).toBe(LinkedInStrategy);
     });
   });
 
@@ -49,7 +62,8 @@ describe('StrategyRegistry', () => {
       const strategies = getAllStrategyClasses();
       expect(strategies).toContain(GoogleStrategy);
       expect(strategies).toContain(FacebookStrategy);
-      expect(strategies.length).toBe(2);
+      expect(strategies).toContain(LinkedInStrategy);
+      expect(strategies.length).toBe(3);
     });
 
     it('should return array of strategy classes', () => {

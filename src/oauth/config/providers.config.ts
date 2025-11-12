@@ -37,6 +37,19 @@ export function getProvidersConfig(): ProvidersConfig {
     };
   }
 
+  // LinkedIn configuration
+  if (
+    process.env.LINKEDIN_CLIENT_ID &&
+    process.env.LINKEDIN_CLIENT_SECRET &&
+    process.env.LINKEDIN_CALLBACK_URL
+  ) {
+    config.linkedin = {
+      clientId: process.env.LINKEDIN_CLIENT_ID,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+      redirect: process.env.LINKEDIN_CALLBACK_URL,
+    };
+  }
+
   return config;
 }
 
