@@ -43,11 +43,13 @@ const REQUIRED_PACKAGES = [
   'passport',
   'passport-google-oauth20',
   'passport-facebook',
+  'passport-linkedin-oauth2',
 ];
 
 const REQUIRED_DEV_PACKAGES = [
   '@types/passport-google-oauth20',
   '@types/passport-facebook',
+  '@types/passport-linkedin-oauth2',
 ];
 
 console.log('🚀 Integrating OAuth module into your NestJS project...\n');
@@ -117,10 +119,14 @@ console.log('   GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback'
 console.log('   FACEBOOK_CLIENT_ID=your-facebook-client-id');
 console.log('   FACEBOOK_CLIENT_SECRET=your-facebook-client-secret');
 console.log('   FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback');
+console.log('   LINKEDIN_CLIENT_ID=your-linkedin-client-id');
+console.log('   LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret');
+console.log('   LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback');
 console.log('3. Start your NestJS application: npm run start:dev');
 console.log('4. Test OAuth endpoints:');
 console.log('   - GET http://localhost:3000/oauth/google');
-console.log('   - GET http://localhost:3000/oauth/facebook\n');
+console.log('   - GET http://localhost:3000/oauth/facebook');
+console.log('   - GET http://localhost:3000/oauth/linkedin\n');
 
 /**
  * Recursively copy directory

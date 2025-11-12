@@ -1,10 +1,12 @@
 import { Type } from '@nestjs/common';
 import { GoogleStrategy } from '../providers/google.strategy';
 import { FacebookStrategy } from '../providers/facebook.strategy';
+import { LinkedInStrategy } from '../providers/linkedin.strategy';
 
 export const STRATEGY_REGISTRY: Record<string, Type<any>> = {
   google: GoogleStrategy,
   facebook: FacebookStrategy,
+  linkedin: LinkedInStrategy,
 };
 
 /**
