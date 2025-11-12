@@ -277,6 +277,33 @@ npm run test:e2e
 - Integration tests for module registration
 - E2E tests for HTTP endpoints
 
+## CI/CD
+
+This project uses GitHub Actions for continuous integration. The CI pipeline automatically:
+
+- ✅ Runs on every push and pull request to `main`, `master`, and `develop` branches
+- ✅ Tests on Node.js 18.x and 20.x
+- ✅ Runs ESLint to check code quality
+- ✅ Builds the project to ensure it compiles
+- ✅ Runs all unit tests
+- ✅ Runs E2E tests
+- ✅ Generates test coverage reports
+
+### CI Workflow
+
+The CI workflow (`.github/workflows/ci.yml`) includes:
+
+1. **Test Job**: Runs linting, builds, and tests on multiple Node.js versions
+2. **Coverage Job**: Generates and optionally uploads test coverage to Codecov
+
+### Status Badge
+
+You can add a status badge to your README:
+
+```markdown
+![CI](https://github.com/cuongdinhngo/nestjs-social-auth/workflows/CI/badge.svg)
+```
+
 ## Adding New Providers
 
 1. Create a new strategy file in `src/oauth/providers/` (e.g., `linkedin.strategy.ts`)
