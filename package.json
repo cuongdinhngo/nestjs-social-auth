@@ -1,6 +1,6 @@
 {
   "name": "nestjs-social-auth",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "NestJS library for OAuth SSO via Social providers (Google, Facebook, LinkedIn, etc.)",
   "author": "",
   "private": false,
