@@ -33,9 +33,6 @@ describe('ProvidersConfig', () => {
       delete process.env.APPLE_TEAM_ID;
       delete process.env.APPLE_KEY_ID;
       delete process.env.APPLE_PRIVATE_KEY;
-      delete process.env.APPLE_TEAM_ID;
-      delete process.env.APPLE_KEY_ID;
-      delete process.env.APPLE_PRIVATE_KEY;
       delete process.env.APPLE_CALLBACK_URL;
 
       const config = getProvidersConfig();

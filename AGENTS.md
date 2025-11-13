@@ -194,7 +194,7 @@ The `integrate` command automatically:
      - `passport-google-oauth20`
      - `passport-facebook`
      - `passport-linkedin-oauth2`
-     - `passport-oauth2` (for Apple)
+     - `passport-apple`
    - Dev dependencies:
      - `@types/passport-google-oauth20`
      - `@types/passport-facebook`
