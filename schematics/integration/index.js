@@ -5,7 +5,7 @@ const { integrate } = require('../../scripts/integrate-core');
  * Usage: nest generate nestjs-social-auth:integration
  * Or shorthand: nest g nestjs-social-auth:integration
  */
-function integrateOAuth(options) {
+function integrateOAuth() {
   return (tree, context) => {
     const projectPath = process.cwd();
 
