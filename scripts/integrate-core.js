@@ -31,20 +31,34 @@ const REQUIRED_DEV_PACKAGES = [
  * @returns {string} Path to source oauth directory
  */
 function findSourceOAuthDir(baseDir) {
-  let sourceOAuthDir = path.join(baseDir, '../src/oauth');
+  // Try multiple possible paths to find the source oauth directory
+  const possiblePaths = [
+    // From scripts directory: ../src/oauth
+    path.join(baseDir, '../src/oauth'),
+    // From schematics directory: ../../src/oauth
+    path.join(baseDir, '../../src/oauth'),
+  ];
 
-  if (!fs.existsSync(sourceOAuthDir)) {
-    // Try to resolve from package location (when installed as npm package)
-    try {
-      const packagePath = require.resolve('nestjs-social-auth/package.json');
-      sourceOAuthDir = path.join(path.dirname(packagePath), 'src/oauth');
-    } catch (error) {
-      // If package resolution fails, try relative to base directory
-      sourceOAuthDir = path.join(baseDir, '../src/oauth');
+  // Check each possible path
+  for (const possiblePath of possiblePaths) {
+    if (fs.existsSync(possiblePath)) {
+      return possiblePath;
     }
   }
 
-  return sourceOAuthDir;
+  // If none of the relative paths work, try package resolution
+  try {
+    const packagePath = require.resolve('nestjs-social-auth/package.json');
+    const sourceOAuthDir = path.join(path.dirname(packagePath), 'src/oauth');
+    if (fs.existsSync(sourceOAuthDir)) {
+      return sourceOAuthDir;
+    }
+  } catch (error) {
+    // Package resolution failed, continue to fallback
+  }
+
+  // Fallback to the original path (for backward compatibility)
+  return path.join(baseDir, '../src/oauth');
 }
 
 /**
