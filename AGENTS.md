@@ -18,7 +18,9 @@ oauth/
 │   └── oauth.guard.ts         # Dynamic OAuth guard (Google, Facebook, ...)
 └── providers/
     ├── google.strategy.ts     # Google OAuth2 strategy
-    └── facebook.strategy.ts   # Facebook OAuth2 strategy
+    ├── facebook.strategy.ts   # Facebook OAuth2 strategy
+    ├── linkedin.strategy.ts   # LinkedIn OAuth2 strategy
+    └── apple.strategy.ts       # Apple OAuth2 strategy
 ```
 
 ## Endpoints
@@ -27,12 +29,12 @@ oauth/
 
 1. **`GET /oauth/:provider`**
    - Redirects to the provider's sign-in page
-   - Example: `/oauth/google`, `/oauth/facebook`, `/oauth/linkedin`
+   - Example: `/oauth/google`, `/oauth/facebook`, `/oauth/linkedin`, `/oauth/apple`
 
 2. **`GET /oauth/:provider/callback`**
    - Handles OAuth callback from provider
    - Returns provider response (profile, refreshToken, accessToken)
-   - Example: `/oauth/google/callback`, `/oauth/facebook/callback`
+   - Example: `/oauth/google/callback`, `/oauth/facebook/callback`, `/oauth/linkedin/callback`, `/oauth/apple/callback`
 
 ## Technical Decisions
 
@@ -91,6 +93,20 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
 FACEBOOK_CLIENT_ID=your-facebook-client-id
 FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
 FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
+```
+
+**LinkedIn:**
+```
+LINKEDIN_CLIENT_ID=your-linkedin-client-id
+LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
+LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
+```
+
+**Apple:**
+```
+APPLE_CLIENT_ID=your-apple-client-id
+APPLE_CLIENT_SECRET=your-apple-client-secret
+APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
 ```
 
 ## Usage Options
@@ -175,9 +191,12 @@ The `integrate` command automatically:
      - `passport`
      - `passport-google-oauth20`
      - `passport-facebook`
+     - `passport-linkedin-oauth2`
+     - `passport-oauth2` (for Apple)
    - Dev dependencies:
      - `@types/passport-google-oauth20`
      - `@types/passport-facebook`
+     - `@types/passport-linkedin-oauth2`
 
 ### Manual Steps After Integration
 
@@ -205,6 +224,14 @@ After running the integration command, you need to:
    FACEBOOK_CLIENT_ID=your-facebook-client-id
    FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
    FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
+
+   LINKEDIN_CLIENT_ID=your-linkedin-client-id
+   LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
+   LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
+
+   APPLE_CLIENT_ID=your-apple-client-id
+   APPLE_CLIENT_SECRET=your-apple-client-secret
+   APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
    ```
 
 3. **Start your application** and test the endpoints
@@ -251,5 +278,11 @@ When making changes to core configuration files, you **MUST** update the corresp
    - ✅ Update `strategy.registry.spec.ts` to include the new strategy
    - ✅ Add provider configuration to `providers.config.ts`
    - ✅ Update `providers.config.spec.ts` to test the new provider config
+   - ✅ Export the new strategy from `src/index.ts`
+   - ✅ Update `integrate.js` script:
+     - Add required passport package to `REQUIRED_PACKAGES` (if new package needed)
+     - Add type definitions to `REQUIRED_DEV_PACKAGES` (if available)
+     - Add environment variable examples in the instructions section
+     - Add endpoint to the test endpoints list
 
 **Important**: All tests must pass before committing changes. Run `npm test` to verify.

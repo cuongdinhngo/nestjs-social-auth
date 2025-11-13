@@ -50,6 +50,19 @@ export function getProvidersConfig(): ProvidersConfig {
     };
   }
 
+  // Apple configuration
+  if (
+    process.env.APPLE_CLIENT_ID &&
+    process.env.APPLE_CLIENT_SECRET &&
+    process.env.APPLE_CALLBACK_URL
+  ) {
+    config.apple = {
+      clientId: process.env.APPLE_CLIENT_ID,
+      clientSecret: process.env.APPLE_CLIENT_SECRET,
+      redirect: process.env.APPLE_CALLBACK_URL,
+    };
+  }
+
   return config;
 }
 

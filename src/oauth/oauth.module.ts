@@ -8,7 +8,9 @@ import { getStrategyClass } from './config/strategy.registry';
 
 const createProviders = () => {
   const providers: Array<
-    typeof OAuthService | typeof OAuthGuard | NonNullable<ReturnType<typeof getStrategyClass>>
+    | typeof OAuthService
+    | typeof OAuthGuard
+    | NonNullable<ReturnType<typeof getStrategyClass>>
   > = [OAuthService, OAuthGuard];
 
   // Only register strategies for providers that have valid config
