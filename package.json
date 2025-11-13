@@ -12,6 +12,9 @@
     "social-auth",
     "google-oauth",
     "facebook-oauth",
+    "linkedin-oauth",
+    "apple-oauth",
+    "sign-in-with-apple",
     "passport",
     "authentication"
   ],
@@ -23,6 +26,7 @@
     "dist",
     "src",
     "scripts",
+    "schematics",
     "README.md",
     "LICENSE"
   ],
@@ -47,12 +51,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "integrate": "node scripts/integrate.js",
-    "postinstall": "echo 'Run: npx nestjs-social-auth-integrate to integrate OAuth module'"
+    "integrate": "node scripts/integrate.js"
   },
   "bin": {
     "nestjs-social-auth-integrate": "./scripts/integrate.js"
   },
+  "schematics": "./schematics/collection.json",
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
