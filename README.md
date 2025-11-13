@@ -45,7 +45,7 @@ npm run integrate:oauth
    - `passport-google-oauth20`
    - `passport-facebook`
    - `passport-linkedin-oauth2`
-   - `passport-oauth2` (for Apple)
+   - `passport-apple` (for Apple Sign In)
    - `@types/passport-google-oauth20` (dev)
    - `@types/passport-facebook` (dev)
    - `@types/passport-linkedin-oauth2` (dev)
@@ -75,8 +75,10 @@ npm run integrate:oauth
    LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
    LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
 
-   APPLE_CLIENT_ID=your-apple-client-id
-   APPLE_CLIENT_SECRET=your-apple-client-secret
+   APPLE_CLIENT_ID=your-apple-service-id
+   APPLE_TEAM_ID=your-apple-team-id
+   APPLE_KEY_ID=your-apple-key-id
+   APPLE_PRIVATE_KEY=your-apple-private-key-content
    APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
    ```
 
@@ -227,9 +229,11 @@ LINKEDIN_CLIENT_ID=your-linkedin-client-id
 LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
 LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
 
-# Apple OAuth
-APPLE_CLIENT_ID=your-apple-client-id
-APPLE_CLIENT_SECRET=your-apple-client-secret
+# Apple OAuth (Sign in with Apple)
+APPLE_CLIENT_ID=your-apple-service-id
+APPLE_TEAM_ID=your-apple-team-id
+APPLE_KEY_ID=your-apple-key-id
+APPLE_PRIVATE_KEY=your-apple-private-key-content
 APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
 ```
 

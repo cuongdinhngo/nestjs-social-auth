@@ -30,7 +30,12 @@ describe('ProvidersConfig', () => {
       delete process.env.LINKEDIN_CLIENT_SECRET;
       delete process.env.LINKEDIN_CALLBACK_URL;
       delete process.env.APPLE_CLIENT_ID;
-      delete process.env.APPLE_CLIENT_SECRET;
+      delete process.env.APPLE_TEAM_ID;
+      delete process.env.APPLE_KEY_ID;
+      delete process.env.APPLE_PRIVATE_KEY;
+      delete process.env.APPLE_TEAM_ID;
+      delete process.env.APPLE_KEY_ID;
+      delete process.env.APPLE_PRIVATE_KEY;
       delete process.env.APPLE_CALLBACK_URL;
 
       const config = getProvidersConfig();
@@ -80,15 +85,19 @@ describe('ProvidersConfig', () => {
     });
 
     it('should return Apple config when Apple env vars are set', () => {
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
       const config = getProvidersConfig();
       expect(config.apple).toEqual({
-        clientId: 'test-apple-id',
-        clientSecret: 'test-apple-secret',
+        clientId: 'test-apple-service-id',
+        teamId: 'test-team-id',
+        keyId: 'test-key-id',
+        privateKey: 'test-private-key',
         redirect: 'http://localhost:3000/oauth/apple/callback',
       });
     });
@@ -106,8 +115,10 @@ describe('ProvidersConfig', () => {
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
       process.env.LINKEDIN_CALLBACK_URL =
         'http://localhost:3000/oauth/linkedin/callback';
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
@@ -149,8 +160,10 @@ describe('ProvidersConfig', () => {
     });
 
     it('should not include Apple if any env var is missing', () => {
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      delete process.env.APPLE_CLIENT_SECRET;
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      delete process.env.APPLE_KEY_ID;
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
@@ -207,8 +220,10 @@ describe('ProvidersConfig', () => {
       delete process.env.GOOGLE_CLIENT_ID;
       delete process.env.FACEBOOK_CLIENT_ID;
       delete process.env.LINKEDIN_CLIENT_ID;
-      process.env.APPLE_CLIENT_ID = 'test-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-secret';
+      process.env.APPLE_CLIENT_ID = 'test-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
@@ -229,8 +244,10 @@ describe('ProvidersConfig', () => {
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
       process.env.LINKEDIN_CALLBACK_URL =
         'http://localhost:3000/oauth/linkedin/callback';
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
@@ -275,15 +292,19 @@ describe('ProvidersConfig', () => {
     });
 
     it('should return config for Apple provider', () => {
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
       const config = getProviderConfig('apple');
       expect(config).toEqual({
-        clientId: 'test-apple-id',
-        clientSecret: 'test-apple-secret',
+        clientId: 'test-apple-service-id',
+        teamId: 'test-team-id',
+        keyId: 'test-key-id',
+        privateKey: 'test-private-key',
         redirect: 'http://localhost:3000/oauth/apple/callback',
       });
     });
@@ -298,8 +319,10 @@ describe('ProvidersConfig', () => {
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
       process.env.LINKEDIN_CALLBACK_URL =
         'http://localhost:3000/oauth/linkedin/callback';
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
@@ -353,8 +376,10 @@ describe('ProvidersConfig', () => {
     });
 
     it('should return true for Apple when configured', () => {
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 
@@ -370,8 +395,10 @@ describe('ProvidersConfig', () => {
       process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
       process.env.LINKEDIN_CALLBACK_URL =
         'http://localhost:3000/oauth/linkedin/callback';
-      process.env.APPLE_CLIENT_ID = 'test-apple-id';
-      process.env.APPLE_CLIENT_SECRET = 'test-apple-secret';
+      process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+      process.env.APPLE_TEAM_ID = 'test-team-id';
+      process.env.APPLE_KEY_ID = 'test-key-id';
+      process.env.APPLE_PRIVATE_KEY = 'test-private-key';
       process.env.APPLE_CALLBACK_URL =
         'http://localhost:3000/oauth/apple/callback';
 

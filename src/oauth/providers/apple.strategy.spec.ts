@@ -11,8 +11,8 @@ jest.mock('@nestjs/passport', () => {
   return {
     PassportStrategy: jest.fn((_Strategy, _name) => {
       return class MockPassportStrategy {
-        constructor(_options: unknown) {}
-        validate(..._args: unknown[]) {}
+        constructor(_options: unknown) { }
+        validate(..._args: unknown[]) { }
       };
     }),
   };
@@ -43,8 +43,10 @@ describe('AppleStrategy', () => {
 
     it('should initialize successfully with valid config', () => {
       const mockConfig = {
-        clientId: 'test-apple-id',
-        clientSecret: 'test-apple-secret',
+        clientId: 'test-apple-service-id',
+        teamId: 'test-team-id',
+        keyId: 'test-key-id',
+        privateKey: 'test-private-key',
         redirect: 'http://localhost:3000/oauth/apple/callback',
       };
       (providersConfig.getProviderConfig as jest.Mock).mockReturnValue(
@@ -61,8 +63,10 @@ describe('AppleStrategy', () => {
 
     beforeEach(() => {
       const mockConfig = {
-        clientId: 'test-apple-id',
-        clientSecret: 'test-apple-secret',
+        clientId: 'test-apple-service-id',
+        teamId: 'test-team-id',
+        keyId: 'test-key-id',
+        privateKey: 'test-private-key',
         redirect: 'http://localhost:3000/oauth/apple/callback',
       };
       (providersConfig.getProviderConfig as jest.Mock).mockReturnValue(
@@ -83,7 +87,13 @@ describe('AppleStrategy', () => {
         },
       };
 
-      strategy.validate('access-token', 'refresh-token', mockProfile, mockDone);
+      strategy.validate(
+        'access-token',
+        'refresh-token',
+        'id-token',
+        mockProfile,
+        mockDone,
+      );
 
       expect(mockDone).toHaveBeenCalledWith(null, {
         profile: {
@@ -104,7 +114,13 @@ describe('AppleStrategy', () => {
         id: '001234.567890abcdef.1234',
       };
 
-      strategy.validate('access-token', null, mockProfile, mockDone);
+      strategy.validate(
+        'access-token',
+        null,
+        'id-token',
+        mockProfile,
+        mockDone,
+      );
 
       expect(mockDone).toHaveBeenCalledWith(null, {
         profile: {
@@ -130,7 +146,13 @@ describe('AppleStrategy', () => {
         },
       };
 
-      strategy.validate('access-token', null, mockProfile, mockDone);
+      strategy.validate(
+        'access-token',
+        null,
+        'id-token',
+        mockProfile,
+        mockDone,
+      );
 
       expect(mockDone).toHaveBeenCalledWith(
         null,
@@ -145,7 +167,13 @@ describe('AppleStrategy', () => {
         email: 'user@example.com',
       };
 
-      strategy.validate('access-token', 'refresh-token', mockProfile, mockDone);
+      strategy.validate(
+        'access-token',
+        'refresh-token',
+        'id-token',
+        mockProfile,
+        mockDone,
+      );
 
       expect(mockDone).toHaveBeenCalledWith(null, {
         profile: {

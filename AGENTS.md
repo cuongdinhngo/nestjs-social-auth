@@ -104,8 +104,10 @@ LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
 
 **Apple:**
 ```
-APPLE_CLIENT_ID=your-apple-client-id
-APPLE_CLIENT_SECRET=your-apple-client-secret
+APPLE_CLIENT_ID=your-apple-service-id
+APPLE_TEAM_ID=your-apple-team-id
+APPLE_KEY_ID=your-apple-key-id
+APPLE_PRIVATE_KEY=your-apple-private-key-content
 APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
 ```
 
@@ -229,8 +231,10 @@ After running the integration command, you need to:
    LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
    LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
 
-   APPLE_CLIENT_ID=your-apple-client-id
-   APPLE_CLIENT_SECRET=your-apple-client-secret
+   APPLE_CLIENT_ID=your-apple-service-id
+   APPLE_TEAM_ID=your-apple-team-id
+   APPLE_KEY_ID=your-apple-key-id
+   APPLE_PRIVATE_KEY=your-apple-private-key-content
    APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
    ```
 

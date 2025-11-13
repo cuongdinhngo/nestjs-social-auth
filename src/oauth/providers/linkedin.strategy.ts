@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-linkedin-oauth2';
-import { getProviderConfig } from '../config/providers.config';
+import {
+  getProviderConfig,
+  ProviderConfig,
+} from '../config/providers.config';
 
 @Injectable()
 export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
   constructor() {
-    const config = getProviderConfig('linkedin');
+    const config = getProviderConfig('linkedin') as ProviderConfig | undefined;
 
     if (!config) {
       throw new Error('LinkedIn OAuth configuration is missing.');

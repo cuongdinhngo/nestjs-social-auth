@@ -12,6 +12,7 @@ export {
   getProviderConfig,
   isProviderSupported,
   type ProviderConfig,
+  type AppleProviderConfig,
   type ProvidersConfig,
 } from './oauth/config/providers.config';
 export {
