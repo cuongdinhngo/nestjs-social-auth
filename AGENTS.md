@@ -124,7 +124,18 @@ The library offers three ways to integrate OAuth into a NestJS project:
    npm install nestjs-social-auth
    ```
 
-2. Run the integration command:
+2. Run the integration command using one of these methods:
+
+   **Method 1: Using NestJS CLI Schematic (Recommended)**
+   ```bash
+   nest generate nestjs-social-auth:integration
+   ```
+   Or shorthand:
+   ```bash
+   nest g nestjs-social-auth:integration
+   ```
+
+   **Method 2: Using npx command**
    ```bash
    npx nestjs-social-auth-integrate
    ```
@@ -179,9 +190,29 @@ export class CustomAuthController {
 
 ## Integration Command Details
 
+### Available Integration Commands
+
+The library provides two ways to run the integration:
+
+1. **NestJS CLI Schematic** (Recommended):
+   ```bash
+   nest generate nestjs-social-auth:integration
+   ```
+   - Integrated with NestJS CLI workflow
+   - Uses `schematics/integration/index.js`
+
+2. **npx Command**:
+   ```bash
+   npx nestjs-social-auth-integrate
+   ```
+   - Standalone command
+   - Uses `scripts/integrate.js`
+
+Both commands use the same core logic from `scripts/integrate-core.js` to ensure consistency.
+
 ### What the Integration Command Does
 
-The `integrate` command automatically:
+The integration command automatically:
 
 1. **Copies oauth directory** to `src/oauth` in your project
    - Includes all controllers, services, modules, guards, providers, and config files
@@ -283,10 +314,11 @@ When making changes to core configuration files, you **MUST** update the corresp
    - ✅ Add provider configuration to `providers.config.ts`
    - ✅ Update `providers.config.spec.ts` to test the new provider config
    - ✅ Export the new strategy from `src/index.ts`
-   - ✅ Update `integrate.js` script:
+   - ✅ Update `scripts/integrate-core.js` (shared core logic):
      - Add required passport package to `REQUIRED_PACKAGES` (if new package needed)
      - Add type definitions to `REQUIRED_DEV_PACKAGES` (if available)
      - Add environment variable examples in the instructions section
      - Add endpoint to the test endpoints list
+   - ✅ Note: Both `schematics/integration/index.js` and `scripts/integrate.js` use the shared core, so updating `integrate-core.js` automatically updates both commands
 
 **Important**: All tests must pass before committing changes. Run `npm test` to verify.

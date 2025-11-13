@@ -1,0 +1,9 @@
+{
+  "schematics": {
+    "integration": {
+      "description": "Integrate OAuth module into NestJS project",
+      "factory": "./integration/index#integrateOAuth",
+      "schema": "./integration/schema.json"
+    }
+  }
+}

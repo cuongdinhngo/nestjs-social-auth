@@ -16,8 +16,19 @@ This library offers three ways to integrate OAuth into your NestJS project:
 
 **Best for**: Users who want full control and customization of the OAuth implementation.
 
-After installation, run the integration command from your NestJS project:
+After installation, run the integration command from your NestJS project using one of these methods:
 
+**Method 1: Using NestJS CLI Schematic (Recommended)**
+```bash
+nest generate nestjs-social-auth:integration
+```
+
+Or shorthand:
+```bash
+nest g nestjs-social-auth:integration
+```
+
+**Method 2: Using npx command**
 ```bash
 npx nestjs-social-auth-integrate
 ```
@@ -197,8 +208,12 @@ This method installs the package directly from the local filesystem. **This is t
 
    Replace `../nestjs-social-auth` with the relative or absolute path to your library.
 
-3. **Run the integration command**:
+3. **Run the integration command** (choose one):
    ```bash
+   # Using NestJS CLI schematic
+   nest generate nestjs-social-auth:integration
+
+   # Or using npx command
    npx nestjs-social-auth-integrate
    ```
 
@@ -325,14 +340,6 @@ The CI workflow (`.github/workflows/ci.yml`) includes:
 1. **Test Job**: Runs linting, builds, and tests on multiple Node.js versions
 2. **Coverage Job**: Generates and optionally uploads test coverage to Codecov
 
-### Status Badge
-
-You can add a status badge to your README:
-
-```markdown
-![CI](https://github.com/cuongdinhngo/nestjs-social-auth/workflows/CI/badge.svg)
-```
-
 ## Supported Providers
 
 The library currently supports the following OAuth providers:
@@ -394,8 +401,9 @@ npm init -y
 # Install your local package
 npm install ../nestjs-social-auth
 
-# Test the integration command
-npx nestjs-social-auth-integrate
+# Test the integration command (choose one)
+nest generate nestjs-social-auth:integration
+# Or: npx nestjs-social-auth-integrate
 ```
 
 #### 4. Check package contents
