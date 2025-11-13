@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-facebook';
-import { getProviderConfig } from '../config/providers.config';
+import {
+  getProviderConfig,
+  ProviderConfig,
+} from '../config/providers.config';
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor() {
-    const config = getProviderConfig('facebook');
+    const config = getProviderConfig('facebook') as ProviderConfig | undefined;
 
     if (!config) {
       throw new Error('Facebook OAuth configuration is missing.');

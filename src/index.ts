@@ -5,12 +5,14 @@ export { OAuthGuard } from './oauth/guards/oauth.guard';
 export { GoogleStrategy } from './oauth/providers/google.strategy';
 export { FacebookStrategy } from './oauth/providers/facebook.strategy';
 export { LinkedInStrategy } from './oauth/providers/linkedin.strategy';
+export { AppleStrategy } from './oauth/providers/apple.strategy';
 export {
   getProvidersConfig,
   getSupportedProviders,
   getProviderConfig,
   isProviderSupported,
   type ProviderConfig,
+  type AppleProviderConfig,
   type ProvidersConfig,
 } from './oauth/config/providers.config';
 export {

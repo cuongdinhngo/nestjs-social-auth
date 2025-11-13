@@ -44,6 +44,7 @@ const REQUIRED_PACKAGES = [
   'passport-google-oauth20',
   'passport-facebook',
   'passport-linkedin-oauth2',
+  'passport-apple',
 ];
 
 const REQUIRED_DEV_PACKAGES = [
@@ -122,11 +123,17 @@ console.log('   FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callb
 console.log('   LINKEDIN_CLIENT_ID=your-linkedin-client-id');
 console.log('   LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret');
 console.log('   LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback');
+console.log('   APPLE_CLIENT_ID=your-apple-service-id');
+console.log('   APPLE_TEAM_ID=your-apple-team-id');
+console.log('   APPLE_KEY_ID=your-apple-key-id');
+console.log('   APPLE_PRIVATE_KEY=your-apple-private-key-content');
+console.log('   APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback');
 console.log('3. Start your NestJS application: npm run start:dev');
 console.log('4. Test OAuth endpoints:');
 console.log('   - GET http://localhost:3000/oauth/google');
 console.log('   - GET http://localhost:3000/oauth/facebook');
-console.log('   - GET http://localhost:3000/oauth/linkedin\n');
+console.log('   - GET http://localhost:3000/oauth/linkedin');
+console.log('   - GET http://localhost:3000/oauth/apple\n');
 
 /**
  * Recursively copy directory

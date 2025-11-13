@@ -4,8 +4,16 @@ export interface ProviderConfig {
   redirect: string;
 }
 
+export interface AppleProviderConfig {
+  clientId: string; // Service ID
+  teamId: string; // Team ID
+  keyId: string; // Key ID
+  privateKey: string; // Private key content (as string, not file path)
+  redirect: string;
+}
+
 export interface ProvidersConfig {
-  [provider: string]: ProviderConfig;
+  [provider: string]: ProviderConfig | AppleProviderConfig;
 }
 
 export function getProvidersConfig(): ProvidersConfig {
@@ -50,6 +58,23 @@ export function getProvidersConfig(): ProvidersConfig {
     };
   }
 
+  // Apple configuration
+  if (
+    process.env.APPLE_CLIENT_ID &&
+    process.env.APPLE_TEAM_ID &&
+    process.env.APPLE_KEY_ID &&
+    process.env.APPLE_PRIVATE_KEY &&
+    process.env.APPLE_CALLBACK_URL
+  ) {
+    config.apple = {
+      clientId: process.env.APPLE_CLIENT_ID,
+      teamId: process.env.APPLE_TEAM_ID,
+      keyId: process.env.APPLE_KEY_ID,
+      privateKey: process.env.APPLE_PRIVATE_KEY,
+      redirect: process.env.APPLE_CALLBACK_URL,
+    } as AppleProviderConfig;
+  }
+
   return config;
 }
 
@@ -60,7 +85,7 @@ export function getSupportedProviders(): string[] {
 
 export function getProviderConfig(
   provider: string,
-): ProviderConfig | undefined {
+): ProviderConfig | AppleProviderConfig | undefined {
   const config = getProvidersConfig();
   return config[provider.toLowerCase()];
 }

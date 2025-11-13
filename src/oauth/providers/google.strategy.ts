@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { getProviderConfig } from '../config/providers.config';
+import {
+  getProviderConfig,
+  ProviderConfig,
+} from '../config/providers.config';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
-    const config = getProviderConfig('google');
+    const config = getProviderConfig('google') as ProviderConfig | undefined;
 
     if (!config) {
       throw new Error('Google OAuth configuration is missing.');

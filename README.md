@@ -1,6 +1,6 @@
 # NestJS Social Auth
 
-NestJS library for OAuth SSO via Social providers (Google, Facebook, LinkedIn, etc.)
+NestJS library for OAuth SSO via Social providers (Google, Facebook, LinkedIn, Apple, etc.)
 
 ## Installation
 
@@ -44,8 +44,11 @@ npm run integrate:oauth
    - `passport`
    - `passport-google-oauth20`
    - `passport-facebook`
+   - `passport-linkedin-oauth2`
+   - `passport-apple` (for Apple Sign In)
    - `@types/passport-google-oauth20` (dev)
    - `@types/passport-facebook` (dev)
+   - `@types/passport-linkedin-oauth2` (dev)
 
 **After integration:**
 1. Add `OAuthModule` to your `app.module.ts`:
@@ -67,6 +70,16 @@ npm run integrate:oauth
    FACEBOOK_CLIENT_ID=your-facebook-client-id
    FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
    FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
+
+   LINKEDIN_CLIENT_ID=your-linkedin-client-id
+   LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
+   LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
+
+   APPLE_CLIENT_ID=your-apple-service-id
+   APPLE_TEAM_ID=your-apple-team-id
+   APPLE_KEY_ID=your-apple-key-id
+   APPLE_PRIVATE_KEY=your-apple-private-key-content
+   APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
    ```
 
 **Benefits:**
@@ -97,6 +110,7 @@ export class AppModule {}
 **What you get:**
 - ✅ Automatic endpoints:
   - `GET /oauth/:provider` - Redirects to provider's OAuth page
+    - Supported providers: `google`, `facebook`, `linkedin`, `apple`
   - `GET /oauth/:provider/callback` - Handles OAuth callback
 - ✅ No need to manually use `OAuthGuard` - it's already configured
 - ✅ All strategies are automatically registered
@@ -209,12 +223,26 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
 FACEBOOK_CLIENT_ID=your-facebook-client-id
 FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
 FACEBOOK_CALLBACK_URL=http://localhost:3000/oauth/facebook/callback
+
+# LinkedIn OAuth
+LINKEDIN_CLIENT_ID=your-linkedin-client-id
+LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
+LINKEDIN_CALLBACK_URL=http://localhost:3000/oauth/linkedin/callback
+
+# Apple OAuth (Sign in with Apple)
+APPLE_CLIENT_ID=your-apple-service-id
+APPLE_TEAM_ID=your-apple-team-id
+APPLE_KEY_ID=your-apple-key-id
+APPLE_PRIVATE_KEY=your-apple-private-key-content
+APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
 ```
 
 ### Getting OAuth Credentials
 
 - **Google**: [Google Cloud Console](https://console.cloud.google.com/)
 - **Facebook**: [Facebook Developers](https://developers.facebook.com/)
+- **LinkedIn**: [LinkedIn Developers](https://www.linkedin.com/developers/)
+- **Apple**: [Apple Developer](https://developer.apple.com/)
 
 ## Endpoints
 
@@ -225,10 +253,11 @@ Depending on which option you chose:
 When using the integration command or importing `OAuthModule`, these endpoints are automatically available:
 
 - `GET /oauth/:provider` - Redirects to provider's OAuth page
-  - Example: `GET /oauth/google`, `GET /oauth/facebook`
+  - Example: `GET /oauth/google`, `GET /oauth/facebook`, `GET /oauth/linkedin`, `GET /oauth/apple`
 
 - `GET /oauth/:provider/callback` - OAuth callback handler
   - Returns: `{ profile, refreshToken, accessToken }`
+  - Example: `GET /oauth/google/callback`, `GET /oauth/facebook/callback`, `GET /oauth/linkedin/callback`, `GET /oauth/apple/callback`
 
 ### Option 3: Custom Endpoints
 
@@ -304,12 +333,24 @@ You can add a status badge to your README:
 ![CI](https://github.com/cuongdinhngo/nestjs-social-auth/workflows/CI/badge.svg)
 ```
 
+## Supported Providers
+
+The library currently supports the following OAuth providers:
+
+- ✅ **Google** - OAuth 2.0
+- ✅ **Facebook** - OAuth 2.0
+- ✅ **LinkedIn** - OAuth 2.0
+- ✅ **Apple** - OAuth 2.0 (Sign in with Apple)
+
 ## Adding New Providers
 
-1. Create a new strategy file in `src/oauth/providers/` (e.g., `linkedin.strategy.ts`)
+1. Create a new strategy file in `src/oauth/providers/` (e.g., `twitter.strategy.ts`)
 2. Add it to `src/oauth/config/strategy.registry.ts`
 3. Update `src/oauth/config/providers.config.ts` to read environment variables
 4. Add environment variables to your `.env` file
+5. Export the new strategy from `src/index.ts`
+6. Update `scripts/integrate.js` to include the new provider's packages and environment variables
+7. Write tests for the new strategy
 
 ## Customization
 
