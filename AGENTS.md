@@ -126,18 +126,14 @@ The library offers three ways to integrate OAuth into a NestJS project:
 
 2. Run the integration command using one of these methods:
 
-   **Method 1: Using NestJS CLI Schematic (Recommended)**
-   ```bash
-   nest generate nestjs-social-auth:integration
-   ```
-   Or shorthand:
-   ```bash
-   nest g nestjs-social-auth:integration
-   ```
-
-   **Method 2: Using npx command**
+   **Method 1: Using npx command (Recommended)**
    ```bash
    npx nestjs-social-auth-integrate
+   ```
+
+   **Method 2: Using NestJS CLI Schematic**
+   ```bash
+   nest g integration --collection nestjs-social-auth
    ```
 
 3. **What it does**:
@@ -194,19 +190,19 @@ export class CustomAuthController {
 
 The library provides two ways to run the integration:
 
-1. **NestJS CLI Schematic** (Recommended):
-   ```bash
-   nest generate nestjs-social-auth:integration
-   ```
-   - Integrated with NestJS CLI workflow
-   - Uses `schematics/integration/index.js`
-
-2. **npx Command**:
+1. **npx Command** (Recommended):
    ```bash
    npx nestjs-social-auth-integrate
    ```
    - Standalone command
    - Uses `scripts/integrate.js`
+
+2. **NestJS CLI Schematic**:
+   ```bash
+   nest g integration --collection nestjs-social-auth
+   ```
+   - Integrated with NestJS CLI workflow
+   - Uses `schematics/integration/index.js`
 
 Both commands use the same core logic from `scripts/integrate-core.js` to ensure consistency.
 

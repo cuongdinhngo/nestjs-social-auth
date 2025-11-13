@@ -18,19 +18,14 @@ This library offers three ways to integrate OAuth into your NestJS project:
 
 After installation, run the integration command from your NestJS project using one of these methods:
 
-**Method 1: Using NestJS CLI Schematic (Recommended)**
-```bash
-nest generate nestjs-social-auth:integration
-```
-
-Or shorthand:
-```bash
-nest g nestjs-social-auth:integration
-```
-
-**Method 2: Using npx command**
+**Method 1: Using npx command (Recommended)**
 ```bash
 npx nestjs-social-auth-integrate
+```
+
+**Method 2: Using NestJS CLI Schematic**
+```bash
+nest g integration --collection nestjs-social-auth
 ```
 
 Or add it to your `package.json` scripts:
@@ -210,11 +205,11 @@ This method installs the package directly from the local filesystem. **This is t
 
 3. **Run the integration command** (choose one):
    ```bash
-   # Using NestJS CLI schematic
-   nest generate nestjs-social-auth:integration
-
-   # Or using npx command
+   # Using npx command
    npx nestjs-social-auth-integrate
+
+   # Or using NestJS CLI schematic
+   nest g integration --collection nestjs-social-auth
    ```
 
 4. **Follow the setup steps**:
@@ -402,8 +397,8 @@ npm init -y
 npm install ../nestjs-social-auth
 
 # Test the integration command (choose one)
-nest generate nestjs-social-auth:integration
-# Or: npx nestjs-social-auth-integrate
+npx nestjs-social-auth-integrate
+# Or: nest g integration --collection nestjs-social-auth
 ```
 
 #### 4. Check package contents
