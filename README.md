@@ -344,6 +344,142 @@ The library currently supports the following OAuth providers:
 - ✅ **LinkedIn** - OAuth 2.0
 - ✅ **Apple** - OAuth 2.0 (Sign in with Apple)
 
+## MCP (Model Context Protocol) Support
+
+The library includes optional MCP support, allowing AI assistants and MCP clients to interact with OAuth functionality through the Model Context Protocol.
+
+### Installation
+
+MCP support requires additional dependencies:
+
+```bash
+npm install @omnihash/nestjs-mcp zod
+```
+
+### Setup
+
+Import `OAuthMcpModule` in your `app.module.ts`:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { OAuthModule } from 'nestjs-social-auth';
+import { OAuthMcpModule } from 'nestjs-social-auth';
+
+@Module({
+  imports: [
+    OAuthModule, // Required - provides OAuth functionality
+    OAuthMcpModule.forRoot({
+      name: 'my-oauth-mcp-server',
+      version: '1.0.0',
+      description: 'OAuth MCP server for my application',
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Available MCP Tools
+
+The MCP module exposes the following tools:
+
+#### 1. `get_supported_providers`
+
+Get a list of all supported OAuth providers that are configured.
+
+**Returns:**
+```json
+{
+  "providers": ["google", "facebook", "linkedin", "apple"]
+}
+```
+
+#### 2. `check_provider_support`
+
+Check if a specific OAuth provider is supported and configured.
+
+**Parameters:**
+- `provider` (string): OAuth provider name (e.g., "google", "facebook", "linkedin", "apple")
+
+**Returns:**
+```json
+{
+  "supported": true,
+  "provider": "google"
+}
+```
+
+#### 3. `get_provider_config`
+
+Get configuration information for a specific OAuth provider (without exposing sensitive data like secrets).
+
+**Parameters:**
+- `provider` (string): OAuth provider name
+
+**Returns:**
+```json
+{
+  "provider": "google",
+  "configured": true,
+  "hasClientId": true,
+  "hasClientSecret": true,
+  "callbackUrl": "http://localhost:3000/oauth/google/callback"
+}
+```
+
+#### 4. `get_oauth_endpoints`
+
+Get OAuth authentication and callback endpoints for a specific provider.
+
+**Parameters:**
+- `provider` (string): OAuth provider name
+- `baseUrl` (string, optional): Base URL of your application (defaults to "http://localhost:3000")
+
+**Returns:**
+```json
+{
+  "provider": "google",
+  "authUrl": "http://localhost:3000/oauth/google",
+  "callbackUrl": "http://localhost:3000/oauth/google/callback",
+  "supported": true
+}
+```
+
+### MCP Endpoints
+
+When `OAuthMcpModule` is imported, the MCP server exposes endpoints that can be accessed by MCP clients:
+
+- **SSE Endpoint**: `/sse` - Server-Sent Events endpoint for real-time communication
+- **Messages Endpoint**: `/messages` - HTTP endpoint for MCP message handling
+
+### Security
+
+To secure MCP endpoints, you can apply NestJS guards:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { OAuthMcpModule } from 'nestjs-social-auth';
+import { AuthGuard } from './auth.guard';
+
+@Module({
+  imports: [
+    OAuthMcpModule.forRoot({
+      name: 'my-oauth-mcp-server',
+      version: '1.0.0',
+      guards: [AuthGuard], // Apply guards here
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Example Usage
+
+MCP clients can use these tools to:
+- Discover available OAuth providers
+- Check provider configuration status
+- Get OAuth endpoint URLs for initiating authentication flows
+- Validate provider setup before attempting authentication
+
 ## Adding New Providers
 
 1. Create a new strategy file in `src/oauth/providers/` (e.g., `twitter.strategy.ts`)
