@@ -37,7 +37,9 @@ describe('OAuthMcpModule', () => {
 
   it('should provide OAuthMcpToolsService', () => {
     // Import here to avoid decorator issues
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
     const { OAuthMcpToolsService } = require('./oauth-mcp-tools.service');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
     const service = module.get(OAuthMcpToolsService);
     expect(service).toBeDefined();
   });
@@ -58,4 +60,3 @@ describe('OAuthMcpModule', () => {
     expect(dynamicModule).toBeDefined();
   });
 });
-

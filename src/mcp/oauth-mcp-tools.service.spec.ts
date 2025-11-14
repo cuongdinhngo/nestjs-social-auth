@@ -39,6 +39,7 @@ describe('OAuthMcpToolsService', () => {
       const result = await service.getSupportedProviders();
 
       expect(result).toEqual({ providers: mockProviders });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(oauthService.getSupportedProviders).toHaveBeenCalled();
     });
 
@@ -58,15 +59,19 @@ describe('OAuthMcpToolsService', () => {
       const result = await service.checkProviderSupport({ provider: 'google' });
 
       expect(result).toEqual({ supported: true, provider: 'google' });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(oauthService.isProviderSupported).toHaveBeenCalledWith('google');
     });
 
     it('should return false for unsupported provider', async () => {
       oauthService.isProviderSupported.mockReturnValue(false);
 
-      const result = await service.checkProviderSupport({ provider: 'twitter' });
+      const result = await service.checkProviderSupport({
+        provider: 'twitter',
+      });
 
       expect(result).toEqual({ supported: false, provider: 'twitter' });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(oauthService.isProviderSupported).toHaveBeenCalledWith('twitter');
     });
   });
@@ -89,6 +94,7 @@ describe('OAuthMcpToolsService', () => {
         hasClientSecret: true,
         callbackUrl: 'http://localhost:3000/oauth/google/callback',
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(oauthService.getProviderConfig).toHaveBeenCalledWith('google');
     });
 
@@ -139,6 +145,7 @@ describe('OAuthMcpToolsService', () => {
         callbackUrl: 'http://localhost:3000/oauth/google/callback',
         supported: true,
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(oauthService.isProviderSupported).toHaveBeenCalledWith('google');
     });
 
@@ -172,4 +179,3 @@ describe('OAuthMcpToolsService', () => {
     });
   });
 });
-

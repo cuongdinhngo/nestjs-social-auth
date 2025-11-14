@@ -10,46 +10,49 @@ export class OAuthMcpToolsService {
 
   @McpTool({
     name: 'get_supported_providers',
-    description: 'Get list of supported OAuth providers (Google, Facebook, LinkedIn, Apple)',
+    description:
+      'Get list of supported OAuth providers (Google, Facebook, LinkedIn, Apple)',
     schema: z.object({}),
   })
-  async getSupportedProviders(): Promise<{ providers: string[] }> {
+  getSupportedProviders(): Promise<{ providers: string[] }> {
     const providers = this.oauthService.getSupportedProviders();
-    return { providers };
+    return Promise.resolve({ providers });
   }
 
   @McpTool({
     name: 'check_provider_support',
-    description: 'Check if a specific OAuth provider is supported and configured',
+    description:
+      'Check if a specific OAuth provider is supported and configured',
     schema: z.object({
       provider: z
         .string()
-        .describe('OAuth provider name (e.g., google, facebook, linkedin, apple)'),
+        .describe(
+          'OAuth provider name (e.g., google, facebook, linkedin, apple)',
+        ),
     }),
   })
-  async checkProviderSupport({
+  checkProviderSupport({
     provider,
   }: {
     provider: string;
   }): Promise<{ supported: boolean; provider: string }> {
     const supported = this.oauthService.isProviderSupported(provider);
-    return { supported, provider };
+    return Promise.resolve({ supported, provider });
   }
 
   @McpTool({
     name: 'get_provider_config',
-    description: 'Get configuration for a specific OAuth provider (without sensitive data)',
+    description:
+      'Get configuration for a specific OAuth provider (without sensitive data)',
     schema: z.object({
       provider: z
         .string()
-        .describe('OAuth provider name (e.g., google, facebook, linkedin, apple)'),
+        .describe(
+          'OAuth provider name (e.g., google, facebook, linkedin, apple)',
+        ),
     }),
   })
-  async getProviderConfig({
-    provider,
-  }: {
-    provider: string;
-  }): Promise<{
+  getProviderConfig({ provider }: { provider: string }): Promise<{
     provider: string;
     configured: boolean;
     hasClientId: boolean;
@@ -59,21 +62,23 @@ export class OAuthMcpToolsService {
     const config = this.oauthService.getProviderConfig(provider);
 
     if (!config) {
-      return {
+      return Promise.resolve({
         provider,
         configured: false,
         hasClientId: false,
         hasClientSecret: false,
-      };
+      });
     }
 
-    return {
+    return Promise.resolve({
       provider,
       configured: true,
       hasClientId: !!config.clientId,
-      hasClientSecret: !!('clientSecret' in config ? config.clientSecret : false),
+      hasClientSecret: !!('clientSecret' in config
+        ? config.clientSecret
+        : false),
       callbackUrl: config.redirect,
-    };
+    });
   }
 
   @McpTool({
@@ -82,14 +87,18 @@ export class OAuthMcpToolsService {
     schema: z.object({
       provider: z
         .string()
-        .describe('OAuth provider name (e.g., google, facebook, linkedin, apple)'),
+        .describe(
+          'OAuth provider name (e.g., google, facebook, linkedin, apple)',
+        ),
       baseUrl: z
         .string()
         .optional()
-        .describe('Base URL of your application (defaults to http://localhost:3000)'),
+        .describe(
+          'Base URL of your application (defaults to http://localhost:3000)',
+        ),
     }),
   })
-  async getOAuthEndpoints({
+  getOAuthEndpoints({
     provider,
     baseUrl = 'http://localhost:3000',
   }: {
@@ -104,23 +113,22 @@ export class OAuthMcpToolsService {
     const supported = this.oauthService.isProviderSupported(provider);
 
     if (!supported) {
-      return {
+      return Promise.resolve({
         provider,
         authUrl: '',
         callbackUrl: '',
         supported: false,
-      };
+      });
     }
 
     const authUrl = `${baseUrl}/oauth/${provider}`;
     const callbackUrl = `${baseUrl}/oauth/${provider}/callback`;
 
-    return {
+    return Promise.resolve({
       provider,
       authUrl,
       callbackUrl,
       supported: true,
-    };
+    });
   }
 }
-

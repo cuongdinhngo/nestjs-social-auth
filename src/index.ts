@@ -20,5 +20,8 @@ export {
   getStrategyClass,
   getAllStrategyClasses,
 } from './oauth/config/strategy.registry';
-export { OAuthMcpModule, type OAuthMcpModuleOptions } from './mcp/oauth-mcp.module';
+export {
+  OAuthMcpModule,
+  type OAuthMcpModuleOptions,
+} from './mcp/oauth-mcp.module';
 export { OAuthMcpToolsService } from './mcp/oauth-mcp-tools.service';
