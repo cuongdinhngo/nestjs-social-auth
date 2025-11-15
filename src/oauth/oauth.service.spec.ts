@@ -5,7 +5,10 @@ import * as providersConfig from './config/providers.config';
 // Mock the providers config module
 jest.mock('./config/providers.config', () => ({
   getSupportedProviders: jest.fn(),
+  getAllSupportedProviders: jest.fn(),
+  getConfiguredProviders: jest.fn(),
   isProviderSupported: jest.fn(),
+  isProviderConfigured: jest.fn(),
   getProviderConfig: jest.fn(),
 }));
 
@@ -26,20 +29,33 @@ describe('OAuthService', () => {
   });
 
   describe('getSupportedProviders', () => {
-    it('should return supported providers from config', () => {
-      const mockProviders = ['google', 'facebook'];
-      (providersConfig.getSupportedProviders as jest.Mock).mockReturnValue(
+    it('should return all providers with strategies', () => {
+      const mockProviders = ['google', 'facebook', 'linkedin', 'apple'];
+      (providersConfig.getAllSupportedProviders as jest.Mock).mockReturnValue(
         mockProviders,
       );
 
       const result = service.getSupportedProviders();
       expect(result).toEqual(mockProviders);
-      expect(providersConfig.getSupportedProviders).toHaveBeenCalled();
+      expect(providersConfig.getAllSupportedProviders).toHaveBeenCalled();
+    });
+  });
+
+  describe('getConfiguredProviders', () => {
+    it('should return configured providers from env', () => {
+      const mockProviders = ['google', 'facebook'];
+      (providersConfig.getConfiguredProviders as jest.Mock).mockReturnValue(
+        mockProviders,
+      );
+
+      const result = service.getConfiguredProviders();
+      expect(result).toEqual(mockProviders);
+      expect(providersConfig.getConfiguredProviders).toHaveBeenCalled();
     });
   });
 
   describe('isProviderSupported', () => {
-    it('should return true for supported provider', () => {
+    it('should return true for provider with strategy', () => {
       (providersConfig.isProviderSupported as jest.Mock).mockReturnValue(true);
 
       const result = service.isProviderSupported('google');
@@ -49,13 +65,37 @@ describe('OAuthService', () => {
       );
     });
 
-    it('should return false for unsupported provider', () => {
+    it('should return false for provider without strategy', () => {
       (providersConfig.isProviderSupported as jest.Mock).mockReturnValue(false);
 
-      const result = service.isProviderSupported('linkedin');
+      const result = service.isProviderSupported('twitter');
       expect(result).toBe(false);
       expect(providersConfig.isProviderSupported).toHaveBeenCalledWith(
-        'linkedin',
+        'twitter',
+      );
+    });
+  });
+
+  describe('isProviderConfigured', () => {
+    it('should return true for configured provider', () => {
+      (providersConfig.isProviderConfigured as jest.Mock).mockReturnValue(true);
+
+      const result = service.isProviderConfigured('google');
+      expect(result).toBe(true);
+      expect(providersConfig.isProviderConfigured).toHaveBeenCalledWith(
+        'google',
+      );
+    });
+
+    it('should return false for unconfigured provider', () => {
+      (providersConfig.isProviderConfigured as jest.Mock).mockReturnValue(
+        false,
+      );
+
+      const result = service.isProviderConfigured('google');
+      expect(result).toBe(false);
+      expect(providersConfig.isProviderConfigured).toHaveBeenCalledWith(
+        'google',
       );
     });
   });

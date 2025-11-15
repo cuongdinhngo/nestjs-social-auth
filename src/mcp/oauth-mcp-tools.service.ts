@@ -11,18 +11,28 @@ export class OAuthMcpToolsService {
   @McpTool({
     name: 'get_supported_providers',
     description:
-      'Get list of supported OAuth providers (Google, Facebook, LinkedIn, Apple)',
+      'Get list of all OAuth providers supported by this library (with built-in strategies). ' +
+      'These providers have strategy implementations: Google, Facebook, LinkedIn, Apple. ' +
+      'Note: Providers must still be configured with environment variables to use at runtime.',
     schema: z.object({}),
   })
-  getSupportedProviders(): Promise<{ providers: string[] }> {
+  getSupportedProviders(): Promise<{
+    providers: string[];
+    note: string;
+  }> {
     const providers = this.oauthService.getSupportedProviders();
-    return Promise.resolve({ providers });
+    return Promise.resolve({
+      providers,
+      note: 'These providers have built-in strategies. Configure via environment variables to enable.',
+    });
   }
 
   @McpTool({
     name: 'check_provider_support',
     description:
-      'Check if a specific OAuth provider is supported and configured',
+      'Check if this library has built-in support for a specific OAuth provider. ' +
+      'Returns true if the provider has a strategy implementation (google, facebook, linkedin, apple). ' +
+      'Note: Provider must still be configured with environment variables to use at runtime.',
     schema: z.object({
       provider: z
         .string()
@@ -31,104 +41,94 @@ export class OAuthMcpToolsService {
         ),
     }),
   })
-  checkProviderSupport({
-    provider,
-  }: {
+  checkProviderSupport({ provider }: { provider: string }): Promise<{
+    supported: boolean;
     provider: string;
-  }): Promise<{ supported: boolean; provider: string }> {
-    const supported = this.oauthService.isProviderSupported(provider);
-    return Promise.resolve({ supported, provider });
-  }
-
-  @McpTool({
-    name: 'get_provider_config',
-    description:
-      'Get configuration for a specific OAuth provider (without sensitive data)',
-    schema: z.object({
-      provider: z
-        .string()
-        .describe(
-          'OAuth provider name (e.g., google, facebook, linkedin, apple)',
-        ),
-    }),
-  })
-  getProviderConfig({ provider }: { provider: string }): Promise<{
-    provider: string;
-    configured: boolean;
-    hasClientId: boolean;
-    hasClientSecret: boolean;
-    callbackUrl?: string;
+    message: string;
   }> {
-    const config = this.oauthService.getProviderConfig(provider);
-
-    if (!config) {
-      return Promise.resolve({
-        provider,
-        configured: false,
-        hasClientId: false,
-        hasClientSecret: false,
-      });
-    }
+    const supported = this.oauthService.isProviderSupported(provider);
+    const allProviders = this.oauthService.getSupportedProviders();
 
     return Promise.resolve({
+      supported,
       provider,
-      configured: true,
-      hasClientId: !!config.clientId,
-      hasClientSecret: !!('clientSecret' in config
-        ? config.clientSecret
-        : false),
-      callbackUrl: config.redirect,
+      message: supported
+        ? `Provider '${provider}' is supported by this library. Configure environment variables to enable.`
+        : `Provider '${provider}' is not supported by this library. Supported providers: ${allProviders.join(', ')}`,
     });
   }
 
   @McpTool({
-    name: 'get_oauth_endpoints',
-    description: 'Get OAuth endpoints for initiating authentication flow',
+    name: 'get_provider_config_keys',
+    description:
+      'Get the required environment variable keys for configuring a specific OAuth provider. ' +
+      'Returns the list of environment variables needed and example values (not actual secrets). ' +
+      'This helps developers understand what configuration is required.',
     schema: z.object({
       provider: z
         .string()
         .describe(
           'OAuth provider name (e.g., google, facebook, linkedin, apple)',
         ),
-      baseUrl: z
-        .string()
-        .optional()
-        .describe(
-          'Base URL of your application (defaults to http://localhost:3000)',
-        ),
     }),
   })
-  getOAuthEndpoints({
-    provider,
-    baseUrl = 'http://localhost:3000',
-  }: {
+  getProviderConfigKeys({ provider }: { provider: string }): Promise<{
     provider: string;
-    baseUrl?: string;
-  }): Promise<{
-    provider: string;
-    authUrl: string;
-    callbackUrl: string;
     supported: boolean;
+    requiredEnvVars?: string[];
+    example?: Record<string, string>;
+    message?: string;
   }> {
     const supported = this.oauthService.isProviderSupported(provider);
+    const allProviders = this.oauthService.getSupportedProviders();
 
     if (!supported) {
       return Promise.resolve({
         provider,
-        authUrl: '',
-        callbackUrl: '',
         supported: false,
+        message: `Provider '${provider}' is not supported. Supported providers: ${allProviders.join(', ')}`,
       });
     }
 
-    const authUrl = `${baseUrl}/oauth/${provider}`;
-    const callbackUrl = `${baseUrl}/oauth/${provider}/callback`;
+    // Define required env vars based on provider
+    const providerLower = provider.toLowerCase();
 
+    if (providerLower === 'apple') {
+      return Promise.resolve({
+        provider,
+        supported: true,
+        requiredEnvVars: [
+          'APPLE_CLIENT_ID',
+          'APPLE_TEAM_ID',
+          'APPLE_KEY_ID',
+          'APPLE_PRIVATE_KEY',
+          'APPLE_CALLBACK_URL',
+        ],
+        example: {
+          APPLE_CLIENT_ID: 'your-apple-service-id',
+          APPLE_TEAM_ID: 'your-apple-team-id',
+          APPLE_KEY_ID: 'your-apple-key-id',
+          APPLE_PRIVATE_KEY: 'your-apple-private-key-content',
+          APPLE_CALLBACK_URL: 'http://localhost:3000/oauth/apple/callback',
+        },
+      });
+    }
+
+    // Standard OAuth providers (Google, Facebook, LinkedIn)
+    const upperProvider = provider.toUpperCase();
     return Promise.resolve({
       provider,
-      authUrl,
-      callbackUrl,
       supported: true,
+      requiredEnvVars: [
+        `${upperProvider}_CLIENT_ID`,
+        `${upperProvider}_CLIENT_SECRET`,
+        `${upperProvider}_CALLBACK_URL`,
+      ],
+      example: {
+        [`${upperProvider}_CLIENT_ID`]: `your-${providerLower}-client-id`,
+        [`${upperProvider}_CLIENT_SECRET`]: `your-${providerLower}-client-secret`,
+        [`${upperProvider}_CALLBACK_URL`]: `http://localhost:3000/oauth/${providerLower}/callback`,
+      },
     });
   }
 }

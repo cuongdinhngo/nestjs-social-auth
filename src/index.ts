@@ -9,8 +9,11 @@ export { AppleStrategy } from './oauth/providers/apple.strategy';
 export {
   getProvidersConfig,
   getSupportedProviders,
+  getConfiguredProviders,
+  getAllSupportedProviders,
   getProviderConfig,
   isProviderSupported,
+  isProviderConfigured,
   type ProviderConfig,
   type AppleProviderConfig,
   type ProvidersConfig,
