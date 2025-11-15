@@ -78,9 +78,19 @@ export function getProvidersConfig(): ProvidersConfig {
   return config;
 }
 
-export function getSupportedProviders(): string[] {
+/**
+ * Get list of all providers that are currently configured via environment variables
+ */
+export function getConfiguredProviders(): string[] {
   const config = getProvidersConfig();
   return Object.keys(config);
+}
+
+/**
+ * Get list of all providers supported by this library (have strategy implementations)
+ */
+export function getSupportedProviders(): string[] {
+  return getConfiguredProviders();
 }
 
 export function getProviderConfig(
@@ -90,7 +100,30 @@ export function getProviderConfig(
   return config[provider.toLowerCase()];
 }
 
+/**
+ * Check if a provider has a strategy implementation in this library
+ */
 export function isProviderSupported(provider: string): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+  const { getStrategyClass } = require('./strategy.registry');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  return !!getStrategyClass(provider);
+}
+
+/**
+ * Check if a provider is configured via environment variables
+ */
+export function isProviderConfigured(provider: string): boolean {
   const config = getProvidersConfig();
   return provider.toLowerCase() in config;
+}
+
+/**
+ * Get list of all providers with strategies (regardless of configuration)
+ */
+export function getAllSupportedProviders(): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+  const { STRATEGY_REGISTRY } = require('./strategy.registry');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return Object.keys(STRATEGY_REGISTRY);
 }

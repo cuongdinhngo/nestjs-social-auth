@@ -21,6 +21,9 @@ oauth/
     ├── facebook.strategy.ts   # Facebook OAuth2 strategy
     ├── linkedin.strategy.ts   # LinkedIn OAuth2 strategy
     └── apple.strategy.ts       # Apple OAuth2 strategy
+mcp/
+├── oauth-mcp.module.ts        # MCP module configuration
+└── oauth-mcp-tools.service.ts # MCP tools service (exposes OAuth functionality via MCP)
 ```
 
 ## Endpoints
@@ -318,3 +321,54 @@ When making changes to core configuration files, you **MUST** update the corresp
    - ✅ Note: Both `schematics/integration/index.js` and `scripts/integrate.js` use the shared core, so updating `integrate-core.js` automatically updates both commands
 
 **Important**: All tests must pass before committing changes. Run `npm test` to verify.
+
+## MCP (Model Context Protocol) Support
+
+The library includes optional MCP support for exposing OAuth functionality to AI assistants and MCP clients.
+
+### MCP Module Structure
+
+- **`mcp/oauth-mcp.module.ts`**: MCP module that wraps `@omnihash/nestjs-mcp` and provides OAuth-specific MCP tools
+- **`mcp/oauth-mcp-tools.service.ts`**: Service that defines MCP tools for OAuth operations
+
+### MCP Tools
+
+The MCP module exposes the following tools:
+
+1. **`get_supported_providers`**: Returns list of configured OAuth providers
+2. **`check_provider_support`**: Checks if a provider is supported and configured
+3. **`get_provider_config`**: Gets provider configuration (without sensitive data)
+4. **`get_oauth_endpoints`**: Gets OAuth authentication and callback URLs
+
+### Dependencies
+
+MCP support requires:
+- `@omnihash/nestjs-mcp`: NestJS MCP integration package
+- `zod`: Schema validation for MCP tool parameters
+
+### Usage
+
+Users can optionally import `OAuthMcpModule` to enable MCP support:
+
+```typescript
+import { OAuthMcpModule } from 'nestjs-social-auth';
+
+@Module({
+  imports: [
+    OAuthModule, // Required
+    OAuthMcpModule.forRoot({
+      name: 'my-oauth-mcp-server',
+      version: '1.0.0',
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Testing MCP
+
+When adding or modifying MCP tools:
+- ✅ Create unit tests for `OAuthMcpToolsService`
+- ✅ Test each MCP tool method
+- ✅ Test error handling
+- ✅ Test module registration
