@@ -324,7 +324,16 @@ When making changes to core configuration files, you **MUST** update the corresp
 
 ## MCP (Model Context Protocol) Support
 
-The library includes optional MCP support for exposing OAuth functionality to AI assistants and MCP clients.
+The library includes optional MCP support for exposing OAuth functionality to AI assistants and MCP clients. MCP provides static, library-level information to help developers understand and configure OAuth providers.
+
+### MCP Philosophy
+
+MCP tools in this library focus on **static configuration guidance**, not runtime state:
+- ✅ **What providers does the library support?** (static - based on strategy registry)
+- ✅ **What configuration is required?** (static - environment variable names and examples)
+- ❌ **Is a provider configured in this deployment?** (deployment-specific - not exposed via MCP)
+
+This approach makes MCP useful as a **setup assistant** rather than a runtime monitor.
 
 ### MCP Module Structure
 
@@ -335,10 +344,102 @@ The library includes optional MCP support for exposing OAuth functionality to AI
 
 The MCP module exposes the following tools:
 
-1. **`get_supported_providers`**: Returns list of configured OAuth providers
-2. **`check_provider_support`**: Checks if a provider is supported and configured
-3. **`get_provider_config`**: Gets provider configuration (without sensitive data)
-4. **`get_oauth_endpoints`**: Gets OAuth authentication and callback URLs
+#### 1. `get_supported_providers`
+Returns list of all OAuth providers with built-in strategies in this library.
+
+**Returns:**
+- `providers`: Array of provider names (e.g., `['google', 'facebook', 'linkedin', 'apple']`)
+- `note`: Helper text explaining that providers need environment configuration
+
+**Validation:** Based on `STRATEGY_REGISTRY` (static), not environment variables (dynamic)
+
+#### 2. `check_provider_support`
+Checks if the library has a built-in strategy for a specific provider.
+
+**Parameters:**
+- `provider`: Provider name to check
+
+**Returns:**
+- `supported`: Boolean indicating if strategy exists
+- `provider`: Provider name (echoed back)
+- `message`: Helpful message indicating support status and available providers
+
+**Validation:** Based on `STRATEGY_REGISTRY` (static)
+
+#### 3. `get_provider_config_keys`
+Returns the required environment variable keys and example values for configuring a provider.
+
+**Parameters:**
+- `provider`: Provider name
+
+**Returns:**
+- `provider`: Provider name (echoed back)
+- `supported`: Boolean indicating if provider has a strategy
+- `requiredEnvVars`: Array of environment variable names needed (e.g., `['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_CALLBACK_URL']`)
+- `example`: Object with example values (not actual secrets)
+- `message`: Error message if provider not supported
+
+**Example for Google:**
+```json
+{
+  "provider": "google",
+  "supported": true,
+  "requiredEnvVars": [
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_CALLBACK_URL"
+  ],
+  "example": {
+    "GOOGLE_CLIENT_ID": "your-google-client-id",
+    "GOOGLE_CLIENT_SECRET": "your-google-client-secret",
+    "GOOGLE_CALLBACK_URL": "http://localhost:3000/oauth/google/callback"
+  }
+}
+```
+
+**Example for Apple (different structure):**
+```json
+{
+  "provider": "apple",
+  "supported": true,
+  "requiredEnvVars": [
+    "APPLE_CLIENT_ID",
+    "APPLE_TEAM_ID",
+    "APPLE_KEY_ID",
+    "APPLE_PRIVATE_KEY",
+    "APPLE_CALLBACK_URL"
+  ],
+  "example": {
+    "APPLE_CLIENT_ID": "your-apple-service-id",
+    "APPLE_TEAM_ID": "your-apple-team-id",
+    "APPLE_KEY_ID": "your-apple-key-id",
+    "APPLE_PRIVATE_KEY": "your-apple-private-key-content",
+    "APPLE_CALLBACK_URL": "http://localhost:3000/oauth/apple/callback"
+  }
+}
+```
+
+### Key Functions in providers.config.ts
+
+The MCP implementation uses two distinct validation approaches:
+
+1. **`isProviderSupported(provider: string)`** - Checks if provider has a strategy in `STRATEGY_REGISTRY`
+   - Used by: MCP tools
+   - Returns: `true` for google/facebook/linkedin/apple (regardless of env vars)
+   - Purpose: Library capability discovery
+
+2. **`isProviderConfigured(provider: string)`** - Checks if provider has environment variables set
+   - Used by: Application runtime (guards, services)
+   - Returns: `true` only if all required env vars are present
+   - Purpose: Deployment validation
+
+3. **`getAllSupportedProviders()`** - Returns all providers with strategies
+   - Returns: `['google', 'facebook', 'linkedin', 'apple']` (always)
+   - Source: `STRATEGY_REGISTRY`
+
+4. **`getConfiguredProviders()`** - Returns providers configured in current deployment
+   - Returns: Array of configured providers (varies by deployment)
+   - Source: Environment variables
 
 ### Dependencies
 
@@ -365,10 +466,24 @@ import { OAuthMcpModule } from 'nestjs-social-auth';
 export class AppModule {}
 ```
 
+### Use Cases
+
+MCP tools are designed to help AI assistants with:
+- **Setup assistance**: "What do I need to configure for Google OAuth?"
+- **Library discovery**: "What providers does this library support?"
+- **Configuration guidance**: "Show me example environment variables"
+
+MCP tools are **not** designed for:
+- ❌ Runtime monitoring: "Is Google OAuth working right now?"
+- ❌ Deployment status: "Which providers are configured on server X?"
+- ❌ Endpoint generation: "What are the OAuth URLs for this deployment?"
+
 ### Testing MCP
 
 When adding or modifying MCP tools:
 - ✅ Create unit tests for `OAuthMcpToolsService`
 - ✅ Test each MCP tool method
-- ✅ Test error handling
+- ✅ Test error handling (unsupported providers)
+- ✅ Test all provider types (standard OAuth vs Apple)
 - ✅ Test module registration
+- ✅ Verify tools return static data (not deployment-specific)
