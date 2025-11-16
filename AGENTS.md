@@ -1,5 +1,72 @@
 # NestJS Social Auth Library
 
+## AI Agent Communication Guidelines
+
+### Critical Rules for AI Agents
+
+**1. Always Report Exact Numbers**
+
+❌ **NEVER say:** "Tests are passing" or "All tests pass"
+
+✅ **ALWAYS say:**
+```
+Unit Tests: 106 passed, 0 failed
+E2E Tests: 3 passed, 0 failed
+Linter: 0 errors
+Total: 109 passed, 0 failed
+```
+
+**2. Stop on ANY Failure**
+
+If ANY test fails, STOP immediately and report:
+```
+⚠️ FAILURE DETECTED
+
+Command: npm test
+Exit Code: 1
+Failed Tests: 4
+First Failure: [paste full error]
+
+Should I fix these before continuing?
+```
+
+**3. Show Raw Output, Not Summaries**
+
+Always show actual command output instead of interpretations.
+
+**4. Complete Verification Before "Done"**
+
+Before saying "done", run this EXACT sequence:
+```bash
+npm test          # Expect: 106 passed, 0 failed
+npm run test:e2e  # Expect: 3 passed, 0 failed
+npm run lint      # Expect: 0 errors
+```
+
+---
+
+## Quick Navigation
+
+- [Communication Guidelines](#ai-agent-communication-guidelines) - Rules for AI agents
+- [Project Overview](#project-overview) - What this library does
+- [Testing](#testing) - Test counts, commands, verification
+- [MCP Support](#mcp-model-context-protocol-support) - MCP philosophy and tools
+- [Common Pitfalls](#common-pitfalls) - Mistakes to avoid
+- [Definition of Done](#definition-of-done) - Completion checklist
+
+---
+
+## Last Known Good State
+
+- **Last Verified**: 2025-11-16
+- **Total Tests**: 109 (106 unit + 3 e2e)
+- **Node Versions**: 18.x, 20.x
+- **Supported Providers**: Google, Facebook, LinkedIn, Apple
+- **All Tests Passing**: ✅
+- **Linter Clean**: ✅
+
+---
+
 ## Project Overview
 
 This is an npm package/library that handles OAuth SSO via Social providers (Google, Facebook, LinkedIn, etc.) for NestJS applications.
@@ -272,6 +339,12 @@ After running the integration command, you need to:
 
 ## Testing
 
+### Test Overview
+
+- **Total Tests**: 109
+- **Unit Tests**: 106 tests across all components
+- **E2E Tests**: 3 tests for HTTP endpoints
+
 ### Test Commands
 
 ```bash
@@ -286,6 +359,29 @@ npm run test:e2e   # E2E tests
 - Unit tests for all components (services, guards, strategies, config, controllers, modules)
 - Integration tests for module registration
 - E2E tests for HTTP endpoints
+
+### Verification Checklist
+
+Before committing changes, always verify:
+
+```bash
+# 1. Run all unit tests (106 tests should pass)
+npm test
+
+# 2. Run e2e tests (3 tests should pass)
+npm run test:e2e
+
+# 3. Run linter
+npm run lint
+
+# 4. Check test coverage (optional)
+npm run test:cov
+```
+
+**Expected output:**
+- Unit tests: `Test Suites: X passed, X total` and `Tests: 106 passed, 106 total`
+- E2E tests: `Test Suites: 1 passed, 1 total` and `Tests: 3 passed, 3 total`
+- Linter: No errors or warnings
 
 ### Testing Rules
 
@@ -423,23 +519,18 @@ Returns the required environment variable keys and example values for configurin
 
 The MCP implementation uses two distinct validation approaches:
 
-1. **`isProviderSupported(provider: string)`** - Checks if provider has a strategy in `STRATEGY_REGISTRY`
-   - Used by: MCP tools
-   - Returns: `true` for google/facebook/linkedin/apple (regardless of env vars)
-   - Purpose: Library capability discovery
+| Function | Purpose | Data Source | Used By | Returns |
+|----------|---------|-------------|---------|---------|
+| `isProviderSupported(provider)` | Library capability discovery | `STRATEGY_REGISTRY` (static) | MCP tools | `true` for google/facebook/linkedin/apple (regardless of env vars) |
+| `isProviderConfigured(provider)` | Deployment validation | Environment variables (dynamic) | Guards, services, runtime | `true` only if all required env vars are present |
+| `getAllSupportedProviders()` | List all providers with strategies | `STRATEGY_REGISTRY` (static) | MCP tools | `['google', 'facebook', 'linkedin', 'apple']` (always) |
+| `getConfiguredProviders()` | List configured providers | Environment variables (dynamic) | Application runtime | Array of configured providers (varies by deployment) |
+| `getSupportedProviders()` | Alias for getAllSupportedProviders | `STRATEGY_REGISTRY` (static) | Public API | Same as `getAllSupportedProviders()` |
+| `getProviderConfig(provider)` | Get provider env vars | Environment variables (dynamic) | Guards, strategies | Provider config object or undefined |
 
-2. **`isProviderConfigured(provider: string)`** - Checks if provider has environment variables set
-   - Used by: Application runtime (guards, services)
-   - Returns: `true` only if all required env vars are present
-   - Purpose: Deployment validation
-
-3. **`getAllSupportedProviders()`** - Returns all providers with strategies
-   - Returns: `['google', 'facebook', 'linkedin', 'apple']` (always)
-   - Source: `STRATEGY_REGISTRY`
-
-4. **`getConfiguredProviders()`** - Returns providers configured in current deployment
-   - Returns: Array of configured providers (varies by deployment)
-   - Source: Environment variables
+**Critical distinction**:
+- **Supported** = Has a strategy class in the library (static)
+- **Configured** = Has environment variables set in deployment (dynamic)
 
 ### Dependencies
 
@@ -487,3 +578,79 @@ When adding or modifying MCP tools:
 - ✅ Test all provider types (standard OAuth vs Apple)
 - ✅ Test module registration
 - ✅ Verify tools return static data (not deployment-specific)
+
+## Common Pitfalls
+
+### 1. Confusing "Supported" vs "Configured"
+❌ **Wrong**: Using `isProviderConfigured()` in MCP tools
+✅ **Right**: Using `isProviderSupported()` in MCP tools (checks strategy registry)
+
+❌ **Wrong**: Using `isProviderSupported()` in OAuthGuard
+✅ **Right**: Using `getProviderConfig()` in OAuthGuard (checks env vars)
+
+### 2. Test Environment Variables
+❌ **Wrong**: Only setting env vars for providers you test
+✅ **Right**: Setting env vars for ALL providers with strategies (Google, Facebook, LinkedIn, Apple)
+
+**Why**: OAuthModule automatically instantiates ALL strategies from `STRATEGY_REGISTRY`. If any strategy's env vars are missing, the constructor will throw an error during module initialization.
+
+### 3. getSupportedProviders() Bug
+❌ **Wrong**: `getSupportedProviders()` returning `getConfiguredProviders()`
+✅ **Right**: `getSupportedProviders()` returning `getAllSupportedProviders()`
+
+**Why**: The function documentation says "providers with strategy implementations", which is static (strategy registry), not dynamic (env vars).
+
+### 4. Test Reporting
+❌ **Wrong**: Saying "all tests pass" when you haven't verified the exact count
+✅ **Right**: Reporting exact numbers: "106 unit tests passed, 3 e2e tests passed"
+
+### 5. MCP Tool Design
+❌ **Wrong**: MCP tools returning deployment-specific data (actual env vars, endpoint URLs)
+✅ **Right**: MCP tools returning setup guidance (required env var names, examples)
+
+**Why**: MCP is a "setup assistant", not a "runtime monitor"
+
+## Implementation Status
+
+### Completed Features ✅
+
+- [x] **Google OAuth2** - Full implementation with tests
+- [x] **Facebook OAuth2** - Full implementation with tests
+- [x] **LinkedIn OAuth2** - Full implementation with tests
+- [x] **Apple Sign In** - Full implementation with tests (different auth structure)
+- [x] **MCP Support** - Static configuration guidance (setup assistant)
+- [x] **Integration Command** - Both npx and NestJS CLI schematic
+- [x] **CI/CD Pipeline** - GitHub Actions for automated testing
+
+### Architecture Patterns ✅
+
+- [x] **Dual-Validation Pattern**
+  - `isProviderSupported()` - checks STRATEGY_REGISTRY (static)
+  - `isProviderConfigured()` - checks environment variables (dynamic)
+- [x] **Strategy Registry Pattern** - Centralized provider-to-strategy mapping
+- [x] **Dynamic OAuth Guard** - Single guard handles all providers
+- [x] **Environment-Based Configuration** - All credentials via env vars
+- [x] **MCP as Setup Assistant** - Returns config requirements, not runtime state
+
+### Test Coverage ✅
+
+- [x] **106 Unit Tests** - All components covered
+- [x] **3 E2E Tests** - HTTP endpoint validation
+- [x] **Integration Tests** - Module registration
+- [x] **Strategy Tests** - All 4 providers tested
+- [x] **Config Tests** - Dual-validation pattern verified
+
+---
+
+## Definition of Done
+
+Before marking any task as complete, verify:
+
+- [ ] All unit tests pass (106/106)
+- [ ] All e2e tests pass (3/3)
+- [ ] Linter passes with no errors
+- [ ] Code changes match the architectural patterns (dual-validation, strategy registry)
+- [ ] Tests are updated to reflect code changes
+- [ ] Documentation is updated if public API changed
+- [ ] No actual secrets or deployment-specific data in MCP tools
+- [ ] Verified test output manually (not just assumed)

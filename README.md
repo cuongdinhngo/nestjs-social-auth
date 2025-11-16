@@ -8,6 +8,44 @@ NestJS library for OAuth SSO via Social providers (Google, Facebook, LinkedIn, A
 npm install nestjs-social-auth
 ```
 
+## Quick Start (2 Minutes)
+
+The fastest way to get started with OAuth:
+
+**1. Install the package:**
+```bash
+npm install nestjs-social-auth
+```
+
+**2. Import in your `app.module.ts`:**
+```typescript
+import { Module } from '@nestjs/common';
+import { OAuthModule } from 'nestjs-social-auth';
+
+@Module({
+  imports: [OAuthModule],
+})
+export class AppModule {}
+```
+
+**3. Add ONE provider to your `.env` file:**
+```env
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
+```
+
+**4. Start your app and visit:**
+```
+http://localhost:3000/oauth/google
+```
+
+That's it! You now have Google OAuth working.
+
+**Next steps:** [Configure more providers](#configuration) or [explore usage options](#usage-options) below.
+
+---
+
 ## Usage Options
 
 This library offers three ways to integrate OAuth into your NestJS project:
@@ -694,7 +732,7 @@ npm version major   # 0.0.1 → 1.0.0
 3. **Bin command**: Make sure the bin path works when installed from npm
 4. **First publish**: Use `--access public` flag for scoped packages or if you want to be explicit
 
-### Troubleshooting
+### Publishing Troubleshooting
 
 #### Error: Package name already exists
 - Choose a different name or use scoped package: `@your-username/nestjs-social-auth`
@@ -708,6 +746,139 @@ npm version major   # 0.0.1 → 1.0.0
 #### Bin command not working after install
 - Make sure `scripts/integrate.js` has `#!/usr/bin/env node` at the top
 - Check that the file is included in the published package
+
+## Troubleshooting
+
+### Error: "Provider not supported"
+
+**Problem:** Getting 400 error when visiting `/oauth/:provider`
+
+**Solutions:**
+1. Check that the provider is supported by this library
+   - **Supported providers**: `google`, `facebook`, `linkedin`, `apple`
+   - **Not supported yet**: `twitter`, `github`, etc.
+2. Verify environment variables are configured for that provider
+3. Restart your application after adding env vars
+
+### Error: "Strategy requires a clientID"
+
+**Problem:** Application crashes on startup with missing strategy configuration
+
+**Solutions:**
+1. **For Google/Facebook/LinkedIn:** Ensure all 3 env vars are set:
+   ```env
+   PROVIDER_CLIENT_ID=your-id
+   PROVIDER_CLIENT_SECRET=your-secret
+   PROVIDER_CALLBACK_URL=http://localhost:3000/oauth/provider/callback
+   ```
+
+2. **For Apple:** Ensure all 5 env vars are set:
+   ```env
+   APPLE_CLIENT_ID=your-apple-service-id
+   APPLE_TEAM_ID=your-team-id
+   APPLE_KEY_ID=your-key-id
+   APPLE_PRIVATE_KEY=your-private-key-content
+   APPLE_CALLBACK_URL=http://localhost:3000/oauth/apple/callback
+   ```
+
+3. Check for typos in environment variable names (must be uppercase)
+
+### Tests Failing After Integration
+
+**Problem:** Tests fail after running the integration command
+
+**Solution:**
+When using `OAuthModule`, ALL provider strategies are instantiated. If any provider is missing environment variables, tests will fail.
+
+**Fix:** Set test environment variables for ALL providers:
+```typescript
+// In your test setup (e.g., beforeAll)
+process.env.GOOGLE_CLIENT_ID = 'test-google-id';
+process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
+process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/oauth/google/callback';
+
+process.env.FACEBOOK_CLIENT_ID = 'test-facebook-id';
+process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-secret';
+process.env.FACEBOOK_CALLBACK_URL = 'http://localhost:3000/oauth/facebook/callback';
+
+process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
+process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
+process.env.LINKEDIN_CALLBACK_URL = 'http://localhost:3000/oauth/linkedin/callback';
+
+process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+process.env.APPLE_TEAM_ID = 'test-team-id';
+process.env.APPLE_KEY_ID = 'test-key-id';
+process.env.APPLE_PRIVATE_KEY = 'test-private-key-content';
+process.env.APPLE_CALLBACK_URL = 'http://localhost:3000/oauth/apple/callback';
+```
+
+### OAuth Redirect Not Working
+
+**Problem:** OAuth redirect doesn't happen or returns error
+
+**Solutions:**
+1. Verify callback URL in provider's developer console matches your `.env` file
+2. Ensure your app is running on the correct port
+3. For production, update callback URLs to use HTTPS
+4. Check provider's developer console for error messages
+
+### Environment Variables Not Loading
+
+**Problem:** App can't read environment variables
+
+**Solutions:**
+1. Install `dotenv` if not already installed:
+   ```bash
+   npm install dotenv
+   ```
+
+2. Load environment variables in `main.ts`:
+   ```typescript
+   import { config } from 'dotenv';
+   config(); // Load .env file
+
+   async function bootstrap() {
+     // ... rest of your bootstrap code
+   }
+   ```
+
+3. Verify `.env` file is in the root directory (not in `src/`)
+
+## Test Coverage
+
+This library has comprehensive test coverage:
+
+- **Total Tests**: 109
+- **Unit Tests**: 106 (all components tested)
+- **E2E Tests**: 3 (HTTP endpoint validation)
+- **Coverage**: All core components, strategies, guards, config, and services
+
+### Running Tests
+
+```bash
+# Run all unit tests
+npm test
+
+# Watch mode (runs tests on file changes)
+npm run test:watch
+
+# Generate coverage report
+npm run test:cov
+
+# Run E2E tests
+npm run test:e2e
+```
+
+### What's Tested
+
+✅ **OAuth Strategies** - All 4 providers (Google, Facebook, LinkedIn, Apple)
+✅ **Provider Configuration** - Environment variable parsing and validation
+✅ **Strategy Registry** - Provider-to-strategy mapping
+✅ **OAuth Guard** - Dynamic provider routing
+✅ **OAuth Service** - Business logic and provider queries
+✅ **OAuth Controller** - HTTP endpoint handling
+✅ **MCP Tools** - All 3 MCP tool methods
+✅ **Module Registration** - Proper dependency injection
 
 ## License
 
