@@ -90,7 +90,7 @@ export function getConfiguredProviders(): string[] {
  * Get list of all providers supported by this library (have strategy implementations)
  */
 export function getSupportedProviders(): string[] {
-  return getConfiguredProviders();
+  return getAllSupportedProviders();
 }
 
 export function getProviderConfig(
