@@ -8,7 +8,7 @@ describe('OAuth (e2e)', () => {
   const originalEnv = process.env;
 
   beforeAll(async () => {
-    // Set up test environment variables
+    // Set up test environment variables for all providers
     process.env.GOOGLE_CLIENT_ID = 'test-google-id';
     process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
     process.env.GOOGLE_CALLBACK_URL =
@@ -17,6 +17,16 @@ describe('OAuth (e2e)', () => {
     process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-secret';
     process.env.FACEBOOK_CALLBACK_URL =
       'http://localhost:3000/oauth/facebook/callback';
+    process.env.LINKEDIN_CLIENT_ID = 'test-linkedin-id';
+    process.env.LINKEDIN_CLIENT_SECRET = 'test-linkedin-secret';
+    process.env.LINKEDIN_CALLBACK_URL =
+      'http://localhost:3000/oauth/linkedin/callback';
+    process.env.APPLE_CLIENT_ID = 'test-apple-service-id';
+    process.env.APPLE_TEAM_ID = 'test-team-id';
+    process.env.APPLE_KEY_ID = 'test-key-id';
+    process.env.APPLE_PRIVATE_KEY = 'test-private-key-content';
+    process.env.APPLE_CALLBACK_URL =
+      'http://localhost:3000/oauth/apple/callback';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [OAuthModule],
@@ -37,7 +47,7 @@ describe('OAuth (e2e)', () => {
     it('should return 400 for unsupported provider', () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
-        .get('/oauth/linkedin')
+        .get('/oauth/twitter') // twitter has no strategy implementation
         .expect(400)
         .expect((res: request.Response) => {
           expect((res.body as { message?: string }).message).toContain(
@@ -59,7 +69,7 @@ describe('OAuth (e2e)', () => {
     it('should return 400 for unsupported provider callback', () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return request(app.getHttpServer())
-        .get('/oauth/linkedin/callback')
+        .get('/oauth/twitter/callback') // twitter has no strategy implementation
         .expect(400)
         .expect((res: request.Response) => {
           expect((res.body as { message?: string }).message).toContain(
