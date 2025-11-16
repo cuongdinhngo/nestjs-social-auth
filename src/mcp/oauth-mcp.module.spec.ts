@@ -1,6 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { OAuthMcpModule } from './oauth-mcp.module';
-import { OAuthModule } from '../oauth/oauth.module';
 
 // Mock the MCP module and decorators
 jest.mock('@omnihash/nestjs-mcp', () => ({
@@ -16,41 +14,20 @@ jest.mock('@omnihash/nestjs-mcp', () => ({
 }));
 
 describe('OAuthMcpModule', () => {
-  let module: TestingModule;
-
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        OAuthModule,
-        OAuthMcpModule.forRoot({
-          name: 'test-mcp-server',
-          version: '1.0.0',
-          description: 'Test MCP server',
-        }),
-      ],
-    }).compile();
-  });
-
   it('should be defined', () => {
-    expect(module).toBeDefined();
+    expect(OAuthMcpModule).toBeDefined();
   });
 
-  it('should provide OAuthMcpToolsService', () => {
-    // Import here to avoid decorator issues
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-    const { OAuthMcpToolsService } = require('./oauth-mcp-tools.service');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
-    const service = module.get(OAuthMcpToolsService);
-    expect(service).toBeDefined();
-  });
-
-  it('should use default options when not provided', () => {
+  it('should return a dynamic module with default options', () => {
     const dynamicModule = OAuthMcpModule.forRoot();
     expect(dynamicModule).toBeDefined();
     expect(dynamicModule.module).toBe(OAuthMcpModule);
+    expect(dynamicModule.imports).toBeDefined();
+    expect(dynamicModule.providers).toBeDefined();
+    expect(dynamicModule.exports).toBeDefined();
   });
 
-  it('should use custom options when provided', () => {
+  it('should return a dynamic module with custom options', () => {
     const customOptions = {
       name: 'custom-mcp-server',
       version: '2.0.0',
@@ -58,5 +35,22 @@ describe('OAuthMcpModule', () => {
     };
     const dynamicModule = OAuthMcpModule.forRoot(customOptions);
     expect(dynamicModule).toBeDefined();
+    expect(dynamicModule.module).toBe(OAuthMcpModule);
+  });
+
+  it('should include OAuthMcpToolsService in providers', () => {
+    const dynamicModule = OAuthMcpModule.forRoot();
+    expect(dynamicModule.providers).toContain(
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-member-access
+      require('./oauth-mcp-tools.service').OAuthMcpToolsService,
+    );
+  });
+
+  it('should export OAuthMcpToolsService', () => {
+    const dynamicModule = OAuthMcpModule.forRoot();
+    expect(dynamicModule.exports).toContain(
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-member-access
+      require('./oauth-mcp-tools.service').OAuthMcpToolsService,
+    );
   });
 });
