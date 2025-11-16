@@ -405,6 +405,8 @@ npm install @omnihash/nestjs-mcp zod
 
 ### Setup
 
+#### Step 1: Enable MCP in Your NestJS App
+
 Import `OAuthMcpModule` in your `app.module.ts`:
 
 ```typescript
@@ -423,6 +425,229 @@ import { OAuthMcpModule } from 'nestjs-social-auth';
   ],
 })
 export class AppModule {}
+```
+
+#### Step 2: Start Your NestJS Application
+
+```bash
+npm run start:dev
+```
+
+Your MCP server will be available at:
+- **SSE Endpoint**: `http://localhost:3000/sse`
+- **Messages Endpoint**: `http://localhost:3000/messages`
+
+#### Step 3: Configure MCP Client
+
+Now configure your MCP client (AI assistant) to connect to your NestJS app.
+
+### Configuring MCP Clients
+
+#### Option 1: Claude Desktop App (Recommended)
+
+If you're using [Claude Desktop](https://claude.ai/download), configure it to connect to your MCP server:
+
+**1. Locate your Claude Desktop config file:**
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+**2. Add your MCP server configuration:**
+
+```json
+{
+  "mcpServers": {
+    "nestjs-oauth": {
+      "command": "node",
+      "args": [
+        "-e",
+        "const http = require('http'); const EventSource = require('eventsource'); const es = new EventSource('http://localhost:3000/sse'); es.onmessage = (e) => console.log(e.data); es.onerror = (e) => console.error(e);"
+      ],
+      "env": {
+        "MCP_SERVER_URL": "http://localhost:3000"
+      }
+    }
+  }
+}
+```
+
+**Alternative (using npx with MCP proxy):**
+
+```json
+{
+  "mcpServers": {
+    "nestjs-oauth": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything",
+        "http://localhost:3000"
+      ]
+    }
+  }
+}
+```
+
+**3. Restart Claude Desktop**
+
+After updating the config file, restart Claude Desktop for the changes to take effect.
+
+**4. Verify Connection**
+
+In Claude Desktop, you should see the MCP server connected. Try asking:
+```
+"What OAuth providers are supported by nestjs-social-auth?"
+```
+
+Claude will use the `get_supported_providers` MCP tool to answer.
+
+#### Option 2: VS Code with Claude Extension
+
+If you're using VS Code with a Claude extension that supports MCP:
+
+**1. Install the Claude extension** (if not already installed)
+
+**2. Configure MCP settings** in your VS Code `settings.json`:
+
+```json
+{
+  "claude.mcpServers": {
+    "nestjs-oauth": {
+      "url": "http://localhost:3000",
+      "endpoints": {
+        "sse": "/sse",
+        "messages": "/messages"
+      }
+    }
+  }
+}
+```
+
+**3. Restart VS Code**
+
+#### Option 3: Custom MCP Client
+
+If you're building your own MCP client or using a different AI assistant:
+
+**Connection Details:**
+- **Server URL**: `http://localhost:3000`
+- **SSE Endpoint**: `http://localhost:3000/sse`
+- **Messages Endpoint**: `http://localhost:3000/messages` (POST)
+- **Protocol**: MCP over HTTP with Server-Sent Events
+
+**Example using Node.js:**
+
+```typescript
+import { EventSource } from 'eventsource';
+
+// Connect to SSE endpoint
+const eventSource = new EventSource('http://localhost:3000/sse');
+
+eventSource.onmessage = (event) => {
+  console.log('MCP Message:', event.data);
+};
+
+eventSource.onerror = (error) => {
+  console.error('MCP Error:', error);
+};
+
+// Send MCP tool request
+const response = await fetch('http://localhost:3000/messages', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    jsonrpc: '2.0',
+    id: 1,
+    method: 'tools/call',
+    params: {
+      name: 'get_supported_providers',
+      arguments: {},
+    },
+  }),
+});
+
+const result = await response.json();
+console.log('Supported Providers:', result);
+```
+
+### Testing MCP Connection
+
+Once your MCP client is configured, test the connection:
+
+**1. Check if MCP server is running:**
+```bash
+curl http://localhost:3000/sse
+```
+
+**2. Test MCP tool directly:**
+```bash
+curl -X POST http://localhost:3000/messages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "get_supported_providers",
+      "arguments": {}
+    }
+  }'
+```
+
+Expected response:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "providers": ["google", "facebook", "linkedin", "apple"],
+    "note": "These providers have built-in strategies. Configure via environment variables to enable."
+  }
+}
+```
+
+### Production Deployment
+
+For production deployments:
+
+**1. Use HTTPS:**
+```json
+{
+  "mcpServers": {
+    "nestjs-oauth": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything",
+        "https://your-domain.com"
+      ]
+    }
+  }
+}
+```
+
+**2. Add Authentication:**
+
+Enable guards in your MCP module:
+```typescript
+OAuthMcpModule.forRoot({
+  name: 'my-oauth-mcp-server',
+  version: '1.0.0',
+  guards: [AuthGuard], // Protect MCP endpoints
+})
+```
+
+**3. Configure CORS** (if needed):
+
+```typescript
+// main.ts
+app.enableCors({
+  origin: ['https://claude.ai', 'https://your-client-domain.com'],
+  credentials: true,
+});
 ```
 
 ### Available MCP Tools
