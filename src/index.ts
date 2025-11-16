@@ -9,8 +9,11 @@ export { AppleStrategy } from './oauth/providers/apple.strategy';
 export {
   getProvidersConfig,
   getSupportedProviders,
+  getConfiguredProviders,
+  getAllSupportedProviders,
   getProviderConfig,
   isProviderSupported,
+  isProviderConfigured,
   type ProviderConfig,
   type AppleProviderConfig,
   type ProvidersConfig,
@@ -20,3 +23,8 @@ export {
   getStrategyClass,
   getAllStrategyClasses,
 } from './oauth/config/strategy.registry';
+export {
+  OAuthMcpModule,
+  type OAuthMcpModuleOptions,
+} from './mcp/oauth-mcp.module';
+export { OAuthMcpToolsService } from './mcp/oauth-mcp-tools.service';

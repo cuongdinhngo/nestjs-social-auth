@@ -11,8 +11,8 @@ jest.mock('@nestjs/passport', () => {
   return {
     PassportStrategy: jest.fn((_Strategy, _name) => {
       return class MockPassportStrategy {
-        constructor(_options: unknown) { }
-        validate(..._args: unknown[]) { }
+        constructor(_options: unknown) {}
+        validate(..._args: unknown[]) {}
       };
     }),
   };

@@ -344,6 +344,207 @@ The library currently supports the following OAuth providers:
 - ✅ **LinkedIn** - OAuth 2.0
 - ✅ **Apple** - OAuth 2.0 (Sign in with Apple)
 
+## MCP (Model Context Protocol) Support
+
+The library includes optional MCP support, allowing AI assistants and MCP clients to discover OAuth provider capabilities and configuration requirements. MCP tools focus on **static configuration guidance** rather than deployment-specific runtime state.
+
+### MCP Philosophy
+
+MCP in this library serves as a **setup assistant**, helping developers understand:
+- ✅ What providers are supported by the library
+- ✅ What environment variables are needed
+- ✅ Example configuration values
+
+MCP does **not** provide runtime monitoring of specific deployments.
+
+### Installation
+
+MCP support requires additional dependencies:
+
+```bash
+npm install @omnihash/nestjs-mcp zod
+```
+
+### Setup
+
+Import `OAuthMcpModule` in your `app.module.ts`:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { OAuthModule } from 'nestjs-social-auth';
+import { OAuthMcpModule } from 'nestjs-social-auth';
+
+@Module({
+  imports: [
+    OAuthModule, // Required - provides OAuth functionality
+    OAuthMcpModule.forRoot({
+      name: 'my-oauth-mcp-server',
+      version: '1.0.0',
+      description: 'OAuth MCP server for my application',
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Available MCP Tools
+
+The MCP module exposes three tools focused on library capabilities and configuration requirements:
+
+#### 1. `get_supported_providers`
+
+Get a list of all OAuth providers supported by this library (with built-in strategies).
+
+**Returns:**
+```json
+{
+  "providers": ["google", "facebook", "linkedin", "apple"],
+  "note": "These providers have built-in strategies. Configure via environment variables to enable."
+}
+```
+
+**Note:** This returns all providers with strategies in the library, regardless of whether they're configured in your deployment.
+
+#### 2. `check_provider_support`
+
+Check if the library has a built-in strategy for a specific OAuth provider.
+
+**Parameters:**
+- `provider` (string): OAuth provider name (e.g., "google", "facebook", "linkedin", "apple")
+
+**Returns for supported provider:**
+```json
+{
+  "supported": true,
+  "provider": "google",
+  "message": "Provider 'google' is supported by this library. Configure environment variables to enable."
+}
+```
+
+**Returns for unsupported provider:**
+```json
+{
+  "supported": false,
+  "provider": "twitter",
+  "message": "Provider 'twitter' is not supported by this library. Supported providers: google, facebook, linkedin, apple"
+}
+```
+
+#### 3. `get_provider_config_keys`
+
+Get the required environment variable keys and example values for configuring a provider.
+
+**Parameters:**
+- `provider` (string): OAuth provider name
+
+**Returns for Google (standard OAuth provider):**
+```json
+{
+  "provider": "google",
+  "supported": true,
+  "requiredEnvVars": [
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_CALLBACK_URL"
+  ],
+  "example": {
+    "GOOGLE_CLIENT_ID": "your-google-client-id",
+    "GOOGLE_CLIENT_SECRET": "your-google-client-secret",
+    "GOOGLE_CALLBACK_URL": "http://localhost:3000/oauth/google/callback"
+  }
+}
+```
+
+**Returns for Apple (different auth structure):**
+```json
+{
+  "provider": "apple",
+  "supported": true,
+  "requiredEnvVars": [
+    "APPLE_CLIENT_ID",
+    "APPLE_TEAM_ID",
+    "APPLE_KEY_ID",
+    "APPLE_PRIVATE_KEY",
+    "APPLE_CALLBACK_URL"
+  ],
+  "example": {
+    "APPLE_CLIENT_ID": "your-apple-service-id",
+    "APPLE_TEAM_ID": "your-apple-team-id",
+    "APPLE_KEY_ID": "your-apple-key-id",
+    "APPLE_PRIVATE_KEY": "your-apple-private-key-content",
+    "APPLE_CALLBACK_URL": "http://localhost:3000/oauth/apple/callback"
+  }
+}
+```
+
+**Returns for unsupported provider:**
+```json
+{
+  "provider": "twitter",
+  "supported": false,
+  "message": "Provider 'twitter' is not supported. Supported providers: google, facebook, linkedin, apple"
+}
+```
+
+### MCP Endpoints
+
+When `OAuthMcpModule` is imported, the MCP server exposes endpoints that can be accessed by MCP clients:
+
+- **SSE Endpoint**: `/sse` - Server-Sent Events endpoint for real-time communication
+- **Messages Endpoint**: `/messages` - HTTP endpoint for MCP message handling
+
+### Security
+
+To secure MCP endpoints, you can apply NestJS guards:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { OAuthMcpModule } from 'nestjs-social-auth';
+import { AuthGuard } from './auth.guard';
+
+@Module({
+  imports: [
+    OAuthMcpModule.forRoot({
+      name: 'my-oauth-mcp-server',
+      version: '1.0.0',
+      guards: [AuthGuard], // Apply guards here
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Example AI Assistant Conversation
+
+Here's how an AI assistant might use these MCP tools:
+
+```
+User: "I want to add Google OAuth to my app"
+
+AI: [Calls get_provider_config_keys with provider='google']
+
+AI: "To add Google OAuth, you need to set these environment variables:
+     - GOOGLE_CLIENT_ID=your-google-client-id
+     - GOOGLE_CLIENT_SECRET=your-google-client-secret
+     - GOOGLE_CALLBACK_URL=http://localhost:3000/oauth/google/callback
+
+     Would you like help getting these credentials from Google Cloud Console?"
+```
+
+### What MCP Does vs. Doesn't Do
+
+**MCP tools provide (static library information):**
+- ✅ List of supported providers (google, facebook, linkedin, apple)
+- ✅ Required environment variable names for each provider
+- ✅ Example configuration values
+- ✅ Validation that a provider has a built-in strategy
+
+**MCP tools do NOT provide (deployment-specific runtime state):**
+- ❌ Whether a provider is configured in a specific deployment
+- ❌ Actual environment variable values or secrets
+- ❌ Runtime status or health checks
+- ❌ Deployment-specific endpoint URLs
+
 ## Adding New Providers
 
 1. Create a new strategy file in `src/oauth/providers/` (e.g., `twitter.strategy.ts`)

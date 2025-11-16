@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-facebook';
-import {
-  getProviderConfig,
-  ProviderConfig,
-} from '../config/providers.config';
+import { getProviderConfig, ProviderConfig } from '../config/providers.config';
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
